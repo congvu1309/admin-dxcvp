@@ -9,11 +9,13 @@ export enum ROUTE {
     CATEGORY = '/dashboard/category',
     ADD_CATEGORY = '/dashboard/category/add',
     EDIT_CATEGORY = '/dashboard/category/edit',
-    UTILITY = '/dashboard/utility',
-    ADD_UTILITY = '/dashboard/utility/add-utility',
-    EDIT_UTILITY = '/dashboard/utility/edit-utility',
+    UTILITY = '/dashboard/utilities',
+    ADD_UTILITY = '/dashboard/utilities/add',
+    EDIT_UTILITY = '/dashboard/utilities/edit',
     PRODUCT = '/dashboard/product',
-    ADD_PRODUCT = '/dashboard/product/add-product',
+    ADD_PRODUCT = '/dashboard/product/add',
+    EDIT_PRODUCT = '/dashboard/product/edit',
+    NOT_FOUND = '/not-found',
 }
 
 export enum UserRoleEnum {

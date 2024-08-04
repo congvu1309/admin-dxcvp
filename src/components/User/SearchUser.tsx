@@ -21,7 +21,7 @@ const SearchUser: React.FC<SearchUserProps> = ({ searchUser, setSearchUser, sear
         <>
             <div className='flex items-center pb-14'>
                 <div className='flex flex-1'>
-                    <div className='w-1/3'>
+                    <div className='w-1/2'>
                         <label htmlFor='searchInput' className='sr-only'>Tìm kiếm theo email hoặc tên</label>
                         <input
                             id='searchInput'
@@ -32,7 +32,7 @@ const SearchUser: React.FC<SearchUserProps> = ({ searchUser, setSearchUser, sear
                             className='block w-full rounded-md border-0 py-2 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                         />
                     </div>
-                    <div className='w-1/5 mx-2'>
+                    <div className='w-1/4 mx-2'>
                         <label htmlFor='searchSelect' className='sr-only'>Chọn trạng thái</label>
                         <select
                             id='searchSelect'

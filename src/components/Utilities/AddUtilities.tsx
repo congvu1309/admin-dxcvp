@@ -1,32 +1,26 @@
 'use client';
 
 import { ROUTE } from '@/constant/enum';
-import { ArrowLeft, Image, Pen, Trash } from 'lucide-react';
+import { ArrowLeft, Image, Pen } from 'lucide-react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import CommonUtils from '@/utils/CommonUtils';
-import { useEffect, useState } from 'react';
-import { getCategoryByIdApi, updateCategoryApi } from '@/api/category';
-import { toast } from 'react-toastify';
 import { useMutation } from 'react-query';
-import DeleteCategory from './DeleteCategory';
+import { toast } from 'react-toastify';
+import { createNewUtilitiesApi } from '@/api/utilities';
 import { useAuth } from '@/hooks/useAuth';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 interface FormData {
-    id: number;
     title: string;
     image: string | ArrayBuffer | null;
     previewImgURL: string;
 }
 
-const EditCategory = () => {
+const AddUtilities = () => {
 
-    const params = useParams();
-    const id = parseInt(params.id as string, 10);
-    const [open, setOpen] = useState(false);
-    const [categoryId, setCategoryId] = useState<number | null>(null);
     const { user: currentUser, loading } = useAuth();
     const router = useRouter();
 
@@ -36,41 +30,9 @@ const EditCategory = () => {
             router.push(ROUTE.NOT_FOUND);
         }
 
-        if (currentUser?.role === 'R1') {
-
-            const fetchCategory = async () => {
-                try {
-                    const response = await getCategoryByIdApi(id);
-                    const categoryData = response.data;
-
-                    let imageBase64 = '';
-                    if (categoryData.image) {
-                        imageBase64 = Buffer.from(categoryData.image, 'base64').toString('binary');
-                    }
-
-                    formik.setValues({
-                        ...initialFormData,
-                        id: categoryData.id,
-                        title: categoryData.title,
-                        previewImgURL: imageBase64,
-                    });
-
-                } catch (error) {
-                    console.error('Failed to fetch category data', error);
-                    toast.error('Failed to fetch category data');
-                }
-            };
-
-            if (id) {
-                fetchCategory();
-            }
-        }
-
-    }, [currentUser?.role, id]);
-
+    }, [currentUser?.role]);
 
     const initialFormData: FormData = {
-        id: 0,
         title: '',
         image: '',
         previewImgURL: '',
@@ -94,19 +56,20 @@ const EditCategory = () => {
     };
 
     const mutation = useMutation({
-        mutationFn: (data: typeof initialFormData) => updateCategoryApi(data as any),
+        mutationFn: (data: typeof initialFormData) => createNewUtilitiesApi(data as any),
         onSuccess: (data: any) => {
             if (data.status === 0) {
-                toast.success('Cập nhật thành công!');
+                toast.success('Tạo mới thành công!');
                 setTimeout(() => {
-                    window.location.href = ROUTE.CATEGORY;
+                    window.location.href = ROUTE.UTILITY;
                 }, 1500);
             } else if (data.status === 1) {
-                toast.error('Cập nhật thất bại!');
+                toast.error('Tạo mới thất bại!');
             }
         },
         onError: (error: any) => {
-            console.log('Cập nhật thất bại!', error.response?.data);
+            toast.error('Tạo mới thất bại!');
+            console.error('Tạo mới thất bại!', error);
         },
     });
 
@@ -118,25 +81,21 @@ const EditCategory = () => {
         },
     });
 
-    const handleDeleteCategory = (categoryId: number) => {
-        setOpen(true);
-        setCategoryId(categoryId);
-    };
 
     if (!loading && currentUser?.role === 'R1') {
         return (
             <>
                 <div className='flex items-center pb-5'>
-                    <Link href={ROUTE.CATEGORY} className='p-1.5'>
+                    <Link href={ROUTE.UTILITY} className='p-1.5'>
                         <ArrowLeft className='h-8 w-8' />
                     </Link>
                     <div className='flex flex-1 justify-center pr-12'>
-                        <span className='text-2xl font-semibold'>Chỉnh sửa danh mục</span>
+                        <span className='text-2xl font-semibold'>Tạo tiện ích mới</span>
                     </div>
                 </div>
                 <form onSubmit={formik.handleSubmit}>
                     <div className='flex flex-col justify-center items-center'>
-                        <div className='h-48 w-48 ring-1 ring-inset ring-gray-300 flex rounded items-center justify-center text-2xl font-semibold bg-slate-100 relative'>
+                        <div className='h-48 w-48 ring-1 ring-inset ring-gray-300 flex rounded items-center justify-center text-2xl font-semibold bg-slate-100 relative bg-no-repeat bg-center bg-cover'>
                             {formik.values.previewImgURL ? (
                                 <img src={formik.values.previewImgURL} alt='Avatar' className='h-full w-full rounded' />
                             ) : (
@@ -179,14 +138,6 @@ const EditCategory = () => {
                         </div>
                     </div>
                 </form>
-                <button className='absolute bottom-5 right-5' onClick={() => handleDeleteCategory(id)}>
-                    <Trash className='ml-3 h-10 w-10 cursor-pointer bg-primary text-white rounded-md p-2' />
-                </button>
-                <DeleteCategory
-                    open={open}
-                    setOpen={setOpen}
-                    categoryId={categoryId}
-                />
             </>
         );
     }
@@ -195,4 +146,4 @@ const EditCategory = () => {
 
 }
 
-export default EditCategory;
+export default AddUtilities;

@@ -40,6 +40,8 @@ const LoginForm = () => {
                 toast.error('Không tìm thấy người dùng!');
             } else if (data.status === 3) {
                 toast.error('Sai mật khẩu!');
+            } else if (data.status === 4) {
+                toast.error('Người dùng bị chặn, liên hệ để tìm hiểu!');
             }
         },
         onError: (error: any) => {
@@ -98,7 +100,7 @@ const LoginForm = () => {
                                             htmlFor='password'
                                             className='text-xl font-medium'
                                         >
-                                            Password
+                                            Mật khẩu
                                         </label>
                                         <div className='mt-2'>
                                             <input

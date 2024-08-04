@@ -5,9 +5,10 @@ import {
     CircleUserRound,
     CalendarDays,
     Rows2,
-    List
+    List,
+    CircleDollarSign
 } from 'lucide-react';
-import { ROUTE} from './enum';
+import { ROUTE } from './enum';
 
 export type NavLinkProps = {
     href?: string;
@@ -45,6 +46,11 @@ export const ROUTES_ADMIN: NavLinkProps[] = [
     {
         title: 'Tài khoản',
         icon: <CircleUserRound size={18} />,
+        href: ROUTE.USER
+    },
+    {
+        title: 'Danh thu',
+        icon: <CircleDollarSign size={18} />,
         href: ROUTE.USER
     },
 ];

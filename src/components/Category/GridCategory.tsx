@@ -16,6 +16,11 @@ const GridCategory = () => {
     const [searchCategory, setSearchCategory] = useState('');
 
     useEffect(() => {
+
+        if (!loading && currentUser?.role !== 'R1') {
+            router.push(ROUTE.NOT_FOUND);
+        }
+
         if (currentUser?.role === 'R1') {
             const fetchCategoryData = async () => {
                 try {
@@ -29,9 +34,6 @@ const GridCategory = () => {
             fetchCategoryData();
         }
 
-        if (!loading && currentUser?.role !== 'R1') {
-            router.push(ROUTE.DASHBOARD);
-        }
     }, [currentUser?.role]);
 
     const filteredCategory = categories.filter(category => {
@@ -51,7 +53,7 @@ const GridCategory = () => {
                         searchCategory={searchCategory}
                         setSearchCategory={setSearchCategory}
                     />
-                    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4'>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
                         {filteredCategory && filteredCategory.length > 0 && filteredCategory.map((category) => {
                             let imageBase64 = '';
                             if (category.image) {

@@ -23,6 +23,11 @@ const TableUser = () => {
     const [userStatusToBan, setUserStatusToBan] = useState<string | null>(null);
 
     useEffect(() => {
+
+        if (!loading && currentUser?.role !== 'R1') {
+            router.push(ROUTE.DASHBOARD + ROUTE.NOT_FOUND);
+        }
+
         if (currentUser?.role === 'R1') {
             const fetchUserData = async (page: number, search: string, selected: string) => {
                 try {
@@ -37,10 +42,6 @@ const TableUser = () => {
             };
 
             fetchUserData(currentPage, searchUser, searchSelected);
-        }
-
-        if (!loading && currentUser?.role !== 'R1') {
-            router.push(ROUTE.DASHBOARD);
         }
 
     }, [currentPage, searchUser, searchSelected, currentUser?.role]);

@@ -120,7 +120,7 @@ const Profile = () => {
             </div>
             <form onSubmit={formik.handleSubmit}>
                 <div className='flex flex-col justify-center items-center'>
-                    <div className='h-44 w-44 ring-1 ring-inset ring-gray-300 rounded-full flex items-center justify-center text-2xl font-semibold bg-slate-100 relative'>
+                    <div className='h-44 w-44 ring-1 ring-inset ring-gray-300 rounded-full flex items-center justify-center text-2xl font-semibold bg-slate-100 relative bg-no-repeat bg-center bg-cover'>
                         {user?.avatar && formik.values.previewImgURL ? (
                             <img src={formik.values.previewImgURL} alt='Avatar' className='h-full w-full rounded-full' />
                         ) : (

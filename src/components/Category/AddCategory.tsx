@@ -30,7 +30,7 @@ const AddCategory = () => {
             router.push(ROUTE.NOT_FOUND);
         }
 
-    }, [currentUser?.role]);
+    }, [loading, currentUser?.role,router]);
 
     const initialFormData: FormData = {
         title: '',

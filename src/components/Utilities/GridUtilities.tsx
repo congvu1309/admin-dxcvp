@@ -18,7 +18,7 @@ const GridUtilities = () => {
     useEffect(() => {
 
         if (!loading && currentUser?.role !== 'R1') {
-            window.location.href = (ROUTE.NOT_FOUND);
+            router.push(ROUTE.NOT_FOUND);
         }
 
         if (currentUser?.role === 'R1') {

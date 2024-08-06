@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import SearchProduct from "./SearchProduct";
 import { ProductModel } from "@/models/product";
-import { getAllProductApi } from "@/api/product";
+import { getAllProductApiByUserId } from "@/api/product";
 
 const ListProduct = () => {
     const { user: currentUser, loading } = useAuth();
@@ -23,17 +23,19 @@ const ListProduct = () => {
         if (currentUser?.role === 'R2') {
             const fetchProductData = async () => {
                 try {
-                    const response = await getAllProductApi();
+                    const response = await getAllProductApiByUserId(currentUser.id);
                     setProducts(response.data);
                 } catch (error) {
                     console.error('Failed to fetch product data', error);
                 }
             };
 
-            fetchProductData();
+            if (currentUser.id) {
+                fetchProductData();
+            }
         }
 
-    }, [currentUser?.role]);
+    }, [loading, currentUser?.role, currentUser?.id, router]);
 
     const filteredProduct = products.filter(product => {
         const matchesSearchTerm = product.title.toLowerCase().includes(searchProduct.toLowerCase());
@@ -44,8 +46,6 @@ const ListProduct = () => {
     const handleViewDetailProduct = (productId: any) => {
         router.push(`${ROUTE.EDIT_PRODUCT}/${productId}`);
     }
-
-    console.log(filteredProduct)
 
     if (!loading && currentUser?.role === 'R2') {
         return (
@@ -61,7 +61,7 @@ const ListProduct = () => {
                             if (product.imageProductData[0].image) {
                                 imageBase64 = Buffer.from(product.imageProductData[0].image, 'base64').toString('binary');
                             }
-
+                            
                             return (
                                 <div
                                     key={product.id}
@@ -72,7 +72,7 @@ const ListProduct = () => {
                                         <img
                                             src={imageBase64}
                                             alt={product.title}
-                                            className='rounded-md mr-7 h-52 w-auto bg-no-repeat bg-center bg-cover'
+                                            className='rounded-md mr-7 h-auto w-[400px] bg-no-repeat bg-center bg-cover'
                                         />
                                         <h2 className='text-xl font-semibold'>{product.title}</h2>
                                     </div>

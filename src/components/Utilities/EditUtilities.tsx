@@ -64,7 +64,7 @@ const EditUtilities = () => {
                 fetchUtilities();
             }
         }
-    }, [id, currentUser?.role]);
+    }, [id, currentUser?.role, router]);
 
     const initialFormData: FormData = {
         id: 0,

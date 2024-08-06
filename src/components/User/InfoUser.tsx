@@ -80,7 +80,7 @@ const InfoUser = () => {
             }
         }
 
-    }, [id, currentUser?.role]);
+    }, [id, currentUser?.role, router]);
 
     if (!loading && currentUser?.role === 'R1') {
         return (

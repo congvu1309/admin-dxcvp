@@ -30,7 +30,7 @@ const AddUtilities = () => {
             router.push(ROUTE.NOT_FOUND);
         }
 
-    }, [currentUser?.role]);
+    }, [currentUser?.role,router]);
 
     const initialFormData: FormData = {
         title: '',

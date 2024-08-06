@@ -44,7 +44,7 @@ const TableUser = () => {
             fetchUserData(currentPage, searchUser, searchSelected);
         }
 
-    }, [currentPage, searchUser, searchSelected, currentUser?.role]);
+    }, [currentPage, searchUser, searchSelected, currentUser?.role, router]);
 
     const goToPage = (page: number) => {
         setCurrentPage(page);

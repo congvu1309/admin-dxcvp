@@ -34,7 +34,7 @@ const GridCategory = () => {
             fetchCategoryData();
         }
 
-    }, [currentUser?.role]);
+    }, [loading, currentUser?.role, router]);
 
     const filteredCategory = categories.filter(category => {
         const matchesSearchTerm = category.title.toLowerCase().includes(searchCategory.toLowerCase());

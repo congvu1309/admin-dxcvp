@@ -167,9 +167,7 @@ const AddProduct = () => {
         label: utility.title,
     }));
 
-    const handleUtilitiesChange = (
-        newValue: MultiValue<{ value: string; label: string }>,
-    ) => {
+    const handleUtilitiesChange = (newValue: MultiValue<{ value: string; label: string }>) => {
         formik.setFieldValue('utilities', newValue.map(option => option.value));
     };
 

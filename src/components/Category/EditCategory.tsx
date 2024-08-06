@@ -66,7 +66,7 @@ const EditCategory = () => {
             }
         }
 
-    }, [currentUser?.role, id]);
+    }, [loading, currentUser?.role, id, router]);
 
 
     const initialFormData: FormData = {

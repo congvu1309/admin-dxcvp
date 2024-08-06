@@ -38,7 +38,7 @@ const AddUser = () => {
             router.push(ROUTE.NOT_FOUND);
         }
 
-    }, [currentUser?.role]);
+    }, [currentUser?.role, router, loading]);
 
     const initialFormData: FormData = {
         email: '',

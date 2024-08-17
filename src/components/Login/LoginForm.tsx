@@ -15,16 +15,22 @@ const LoginForm = () => {
     const { user, loading } = useAuth();
     const router = useRouter();
 
+    useEffect(() => {
+        if (!loading && user) {
+            router.push(ROUTE.DASHBOARD);
+        }
+    }, [user, router, loading]);
+
     const initialFormData = {
         email: 'admin@gmail.com',
         password: '12345678',
+        check: 'admin',
     };
 
     const validationSchema = Yup.object({
         email: Yup.string().email('Email không hợp lệ!').required('Vui lòng nhập thông tin!'),
         password: Yup.string().min(8, 'Mật khẩu cần dài ít nhất 8 ký tự!').required('Vui lòng nhập thông tin!'),
     });
-
 
     const mutation = useMutation({
         mutationFn: (data: typeof initialFormData) => loginApi(data),
@@ -41,11 +47,13 @@ const LoginForm = () => {
             } else if (data.status === 3) {
                 toast.error('Sai mật khẩu!');
             } else if (data.status === 4) {
-                toast.error('Người dùng bị chặn, liên hệ để tìm hiểu!');
+                toast.error('Người dùng bị chặn!');
+            } else if (data.status === 5) {
+                toast.error('Người dùng không có quyền!');
             }
         },
         onError: (error: any) => {
-            console.log('Login failed', error.response?.data);
+            console.log('Login failed', error);
         },
     });
 
@@ -57,12 +65,6 @@ const LoginForm = () => {
         },
     });
 
-    useEffect(() => {
-        if (!loading && user) {
-            router.push(ROUTE.DASHBOARD);
-        }
-    }, [user, router, loading]);
-
     if (!loading && !user) {
         return (
             <>
@@ -73,12 +75,7 @@ const LoginForm = () => {
                             <div className='p-5'>
                                 <form onSubmit={formik.handleSubmit}>
                                     <div className='pb-2'>
-                                        <label
-                                            htmlFor='email'
-                                            className='text-xl font-medium'
-                                        >
-                                            Email
-                                        </label>
+                                        <label htmlFor='email' className='text-xl font-medium'>Email</label>
                                         <div className='mt-2'>
                                             <input
                                                 id='email'
@@ -96,12 +93,7 @@ const LoginForm = () => {
                                         </div>
                                     </div>
                                     <div>
-                                        <label
-                                            htmlFor='password'
-                                            className='text-xl font-medium'
-                                        >
-                                            Mật khẩu
-                                        </label>
+                                        <label htmlFor='password' className='text-xl font-medium'>Mật khẩu</label>
                                         <div className='mt-2'>
                                             <input
                                                 id='password'
@@ -133,8 +125,6 @@ const LoginForm = () => {
             </>
         );
     }
-
-    return null;
 };
 
 export default LoginForm;

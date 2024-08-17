@@ -42,6 +42,6 @@ const SearchCategory: React.FC<SearchCategoryProps> = ({ searchCategory, setSear
             </div>
         </>
     );
-}
+};
 
 export default SearchCategory;

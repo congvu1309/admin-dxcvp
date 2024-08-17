@@ -9,6 +9,7 @@ interface SearchProductProps {
 }
 
 const SearchProduct: React.FC<SearchProductProps> = ({ searchProduct, setSearchProduct }) => {
+    
     const router = useRouter();
     const handleAddProductClick = () => {
         router.push(ROUTE.ADD_PRODUCT);

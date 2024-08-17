@@ -1,7 +1,7 @@
 'use client';
 
 import { ROUTE } from '@/constant/enum';
-import { ArrowLeft, X, Image } from 'lucide-react';
+import { ArrowLeft, X, Image, Trash } from 'lucide-react';
 import Link from 'next/link';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
@@ -9,7 +9,7 @@ import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import { getAllCategoryApi } from '@/api/category';
 import { useAuth } from '@/hooks/useAuth';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { CategoryModel } from '@/models/category';
 import MDEditor from '@uiw/react-md-editor';
@@ -21,75 +21,27 @@ import CommonUtils from '@/utils/CommonUtils';
 import { UtilitiesModel } from '@/models/utilities';
 import { getAllUtilitiesApi } from '@/api/utilities';
 import { TIME_TS } from '@/constant/time';
-import { getProductByIdApi } from '@/api/product';
-interface FormData {
-    id: number;
-    userId: number;
-    title: string;
-    address: string;
-    price: string;
-    categoryId: string;
-    guests: string;
-    bedrooms: string;
-    beds: string;
-    bathrooms: string;
-    utilities: string[];
-    checkIn: string;
-    checkOut: string;
-    description: string;
-    images: Array<string | ArrayBuffer | null>;
-    previewImgURLs: string[];
-}
+import { getProductByIdApi, updateProductApi } from '@/api/product';
+import { provincesWithDistricts } from '@/constant/location';
+import HideProduct from './HideProduct';
 
 const animatedComponents = makeAnimated();
 
 const EditProduct = () => {
 
-    const { user: currentUser, loading } = useAuth();
-    const router = useRouter();
-    const [categories, setCategories] = useState<CategoryModel[]>([]);
-    const [utilities, setUtilities] = useState<UtilitiesModel[]>([]);
     const params = useParams();
     const id = parseInt(params.id as string, 10);
-
-    const initialFormData: FormData = {
-        id: 0,
-        userId: 0,
-        title: '',
-        address: '',
-        price: '',
-        categoryId: '',
-        guests: '',
-        bedrooms: '',
-        beds: '',
-        bathrooms: '',
-        utilities: [],
-        checkIn: '',
-        checkOut: '',
-        description: '',
-        images: [],
-        previewImgURLs: [],
-    };
-
-    const validationSchema = Yup.object({
-        title: Yup.string().required('Vui lòng nhập thông tin!'),
-        address: Yup.string().required('Vui lòng nhập thông tin!'),
-        price: Yup.string().required('Vui lòng nhập thông tin!'),
-        guests: Yup.number().required('Vui lòng nhập thông tin!'),
-        bedrooms: Yup.number().required('Vui lòng nhập thông tin!'),
-        beds: Yup.number().required('Vui lòng nhập thông tin!'),
-        bathrooms: Yup.number().required('Vui lòng nhập thông tin!'),
-        checkIn: Yup.string().required('Chọn thời gian nhận phòng!'),
-        checkOut: Yup.string().required('Chọn thời gian trả phòng!'),
-        description: Yup.string().required('Vui lòng nhập thông tin!'),
-    });
+    const { user, loading } = useAuth();
+    const [categories, setCategories] = useState<CategoryModel[]>([]);
+    const [utilities, setUtilities] = useState<UtilitiesModel[]>([]);
+    const [selectedProvince, setSelectedProvince] = useState<{ value: string; label: string } | null>(null);
+    const [open, setOpen] = useState(false);
+    const [productIdToHide, setProductIdToHide] = useState<number | null>(null);
+    const [productStatusToHide, setProductStatusToHide] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!loading && currentUser?.role !== 'R2') {
-            router.push(ROUTE.NOT_FOUND);
-        }
 
-        if (currentUser?.role === 'R2') {
+        if (user?.role === 'R2') {
             const fetchProductData = async () => {
                 try {
                     const response = await getProductByIdApi(id);
@@ -104,12 +56,20 @@ const EditProduct = () => {
                     const utilitiesData = productData.utilityProductData || [];
                     const utilityId = utilitiesData.map((item: any) => item.utilityId);
 
+                    const matchingProvince = provincesOptions.find(
+                        (province) => province.label === productData.provinces
+                    );
+
+                    setSelectedProvince(matchingProvince || null);
+
                     formik.setValues({
                         ...initialFormData,
                         id: productData.id,
                         previewImgURLs,
+                        images: previewImgURLs,
                         title: productData.title,
-                        address: productData.address,
+                        provinces: productData.provinces,
+                        districts: productData.districts,
                         price: productData.price,
                         categoryId: productData.categoryId,
                         guests: productData.guests,
@@ -119,7 +79,7 @@ const EditProduct = () => {
                         utilities: utilityId,
                         checkIn: productData.checkIn,
                         checkOut: productData.checkOut,
-                        description: productData.description
+                        description: productData.description,
                     });
 
                 } catch (error) {
@@ -128,10 +88,6 @@ const EditProduct = () => {
                 }
             };
 
-            fetchProductData();
-        }
-
-        if (currentUser?.role === 'R2') {
             const fetchCategoryData = async () => {
                 try {
                     const response = await getAllCategoryApi();
@@ -142,10 +98,6 @@ const EditProduct = () => {
                 }
             };
 
-            fetchCategoryData();
-        }
-
-        if (currentUser?.role === 'R2') {
             const fetchUtilitiesData = async () => {
                 try {
                     const response = await getAllUtilitiesApi();
@@ -156,10 +108,47 @@ const EditProduct = () => {
                 }
             };
 
+            fetchProductData();
+            fetchCategoryData();
             fetchUtilitiesData();
         }
 
-    }, [currentUser?.role, loading, router]);
+    }, [user?.role]);
+
+    const initialFormData = {
+        id: 0,
+        userId: 0,
+        title: '',
+        provinces: '',
+        districts: '',
+        price: '',
+        categoryId: '',
+        guests: '',
+        bedrooms: '',
+        beds: '',
+        bathrooms: '',
+        utilities: [] as string[],
+        checkIn: '',
+        checkOut: '',
+        description: '',
+        images: [] as (string | ArrayBuffer | null)[],
+        previewImgURLs: [] as string[],
+        // status: 'S1',
+    };
+
+    const validationSchema = Yup.object({
+        title: Yup.string().required('Vui lòng nhập thông tin!'),
+        provinces: Yup.string().required('Vui lòng chọn tỉnh/thành phố!'),
+        districts: Yup.string().required('Vui lòng chọn quận/huyện!'),
+        price: Yup.string().required('Vui lòng nhập thông tin!'),
+        guests: Yup.number().required('Vui lòng nhập thông tin!'),
+        bedrooms: Yup.number().required('Vui lòng nhập thông tin!'),
+        beds: Yup.number().required('Vui lòng nhập thông tin!'),
+        bathrooms: Yup.number().required('Vui lòng nhập thông tin!'),
+        checkIn: Yup.string().required('Vui lòng chọn thời gian nhận phòng!'),
+        checkOut: Yup.string().required('Vui lòng chọn thời gian trả phòng!'),
+        description: Yup.string().required('Vui lòng nhập thông tin!'),
+    });
 
     const handleOnchangeImage = async (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
         const data = event.target.files;
@@ -191,6 +180,28 @@ const EditProduct = () => {
         formik.setFieldValue('previewImgURLs', newPreviewImgURLs);
     };
 
+    const provincesOptions = provincesWithDistricts.map(provinces => ({
+        value: provinces.id.toString(),
+        label: provinces.name,
+        districts: provinces.districts
+    }));
+
+    const handleProvincesChange = (selectedOption: { value: string; label: string } | null) => {
+        formik.setFieldValue('provinces', selectedOption ? selectedOption.label : '');
+        setSelectedProvince(selectedOption);
+    };
+
+    const districtsOptions = selectedProvince
+        ? provincesWithDistricts.find(province => province.id === selectedProvince.value)?.districts.map(district => ({
+            value: district,
+            label: district
+        })) || []
+        : [];
+
+    const handleDistrictsChange = (selectedOption: { value: string; label: string } | null) => {
+        formik.setFieldValue('districts', selectedOption ? selectedOption.label : '');
+    };
+
     const categoryOptions = categories.map(category => ({
         value: category.id.toString(),
         label: category.title,
@@ -209,7 +220,6 @@ const EditProduct = () => {
         formik.setFieldValue('utilities', newValue.map(option => option.value));
     };
 
-
     const timeOptions = TIME_TS.map(time => ({
         value: time.id.toString(),
         label: time.title,
@@ -224,19 +234,19 @@ const EditProduct = () => {
     };
 
     const mutation = useMutation({
-        mutationFn: (data: typeof initialFormData) => (data as any),
+        mutationFn: (data: typeof initialFormData) => updateProductApi(data as any),
         onSuccess: (data: any) => {
             if (data.status === 0) {
-                toast.success('Tạo mới thành công!');
+                toast.success('Cập nhật thành công!');
                 setTimeout(() => {
                     window.location.href = ROUTE.PRODUCT;
                 }, 1500);
             } else if (data.status === 1) {
-                toast.error('Tạo mới thất bại!');
+                toast.error('Cập nhật thất bại!');
             }
         },
         onError: (error: any) => {
-            toast.error('Tạo mới thất bại!');
+            toast.error('Cập nhật thất bại!');
             console.error('Tạo mới thất bại!', error);
         },
     });
@@ -249,7 +259,13 @@ const EditProduct = () => {
         },
     });
 
-    if (!loading && currentUser?.role === 'R2') {
+    const handleHideProduct = (productId: number, status: string) => {
+        setOpen(true);
+        setProductIdToHide(productId);
+        setProductStatusToHide(status);
+    };
+
+    if (!loading && user?.role === 'R2') {
         return (
             <>
                 <div className="flex items-center pb-5">
@@ -313,36 +329,54 @@ const EditProduct = () => {
                                 <div className="text-primary">{formik.errors.title}</div>
                             ) : null}
                         </div>
-                        <div className="mb-4 w-full">
-                            <label htmlFor="address" className="block text-gray-700">Địa chỉ</label>
-                            <input
-                                id="address"
-                                name="address"
-                                type="text"
-                                className="block w-full mt-1 rounded-md border border-gray-300 py-2 px-4 bg-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                                value={formik.values.address}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                            />
-                            {formik.touched.address && formik.errors.address ? (
-                                <div className="text-primary">{formik.errors.address}</div>
-                            ) : null}
+                        <div className="flex items-center space-x-4 w-full mb-4">
+                            <div className="w-full">
+                                <label htmlFor="provinces" className="block text-gray-700">Chọn tỉnh/thành phố</label>
+                                <Select
+                                    id='provinces'
+                                    className=''
+                                    value={provincesOptions.find(option => option.label === formik.values.provinces) || null}
+                                    onChange={(option) => handleProvincesChange(option as any)}
+                                    options={provincesOptions}
+                                    placeholder='Chọn tỉnh/thành phố'
+                                />
+                                {formik.touched.provinces && formik.errors.provinces ? (
+                                    <div className="text-primary">{formik.errors.provinces}</div>
+                                ) : null}
+                            </div>
+                            <div className="w-full">
+                                <label htmlFor="districts" className="block text-gray-700">Chọn quận/huyện</label>
+                                <Select
+                                    id='districts'
+                                    className=''
+                                    value={districtsOptions.find(option => option.label === formik.values.districts) || null}
+                                    onChange={(option) => handleDistrictsChange(option as any)}
+                                    options={districtsOptions}
+                                    placeholder='Chọn quận/huyện'
+                                />
+                                {formik.touched.districts && formik.errors.districts ? (
+                                    <div className="text-primary">{formik.errors.districts}</div>
+                                ) : null}
+                            </div>
                         </div>
                         <div className="flex items-center space-x-4 w-full mb-4">
                             <div className="w-full">
                                 <label htmlFor="price" className="block text-gray-700">Giá/đêm</label>
-                                <NumericFormat
-                                    id="price"
-                                    name="price"
-                                    className="block w-full mt-1 rounded-md border border-gray-300 py-2 px-4 bg-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                                    value={formik.values.price}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    allowLeadingZeros
-                                    allowNegative={false}
-                                    thousandsGroupStyle="thousand"
-                                    thousandSeparator=","
-                                />
+                                <div className="relative">
+                                    <NumericFormat
+                                        id="price"
+                                        name="price"
+                                        className="block w-full mt-1 rounded-md border border-gray-300 py-2 px-4 bg-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                        value={formik.values.price}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        allowLeadingZeros
+                                        allowNegative={false}
+                                        thousandsGroupStyle="none"
+                                        thousandSeparator=","
+                                    />
+                                    <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500">VND</span>
+                                </div>
                                 {formik.touched.price && formik.errors.price ? (
                                     <div className="text-primary">{formik.errors.price}</div>
                                 ) : null}
@@ -497,6 +531,18 @@ const EditProduct = () => {
                         </div>
                     </div>
                 </form>
+                <button
+                    className='absolute bottom-5 right-5'
+                    onClick={() => handleHideProduct(formik.values.id, 'S1')}
+                >
+                    <Trash className='ml-3 h-10 w-10 cursor-pointer bg-primary text-white rounded-md p-2' />
+                </button>
+                <HideProduct
+                    open={open}
+                    setOpen={setOpen}
+                    productIdToHide={productIdToHide}
+                    productStatusToHide={productStatusToHide}
+                />
             </>
         );
     }

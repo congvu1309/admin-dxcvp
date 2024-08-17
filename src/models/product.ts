@@ -14,6 +14,7 @@ export class ProductModel {
     imageProductData: any = null;
     utilities: any = null;
     description: string = '';
+    status: string = '';
 
     constructor(auth?: ProductModel) {
         if (auth) {

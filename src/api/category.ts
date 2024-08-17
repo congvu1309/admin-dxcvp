@@ -9,5 +9,4 @@ export const getCategoryByIdApi = (categoryId: number) => axios.get(`/api/get-ca
 
 export const updateCategoryApi = (payload: CategoryModel) => axios.post(`/api/update-category`, payload);
 
-export const deleteCategoryByIdApi = (categoryId: number) => 
-    axios.delete(`/api/delete-category-by-id?id=${categoryId}`);
+export const deleteCategoryByIdApi = (categoryId: number) =>  axios.delete(`/api/delete-category-by-id?id=${categoryId}`);

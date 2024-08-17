@@ -24,10 +24,6 @@ const TableUser = () => {
 
     useEffect(() => {
 
-        if (!loading && currentUser?.role !== 'R1') {
-            router.push(ROUTE.DASHBOARD + ROUTE.NOT_FOUND);
-        }
-
         if (currentUser?.role === 'R1') {
             const fetchUserData = async (page: number, search: string, selected: string) => {
                 try {
@@ -136,18 +132,16 @@ const TableUser = () => {
                             </ul>
                         </nav>
                     </div>
-                    <BanUser
-                        open={open}
-                        setOpen={setOpen}
-                        userId={userIdToBan}
-                        userStatus={userStatusToBan}
-                    />
                 </div>
+                <BanUser
+                    open={open}
+                    setOpen={setOpen}
+                    userId={userIdToBan}
+                    userStatus={userStatusToBan}
+                />
             </>
         );
     }
-
-    return null;
-};
+}
 
 export default TableUser;

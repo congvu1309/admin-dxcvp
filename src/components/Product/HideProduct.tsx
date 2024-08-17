@@ -3,41 +3,61 @@
 import { ROUTE } from '@/constant/enum';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 import { ExclamationTriangleIcon } from '@heroicons/react/16/solid';
+import { useEffect } from 'react';
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
-import { deleteCategoryByIdApi } from '@/api/category';
+import { useFormik } from 'formik';
+import { updateProductApi } from '@/api/product';
 
-interface DeleteCategoryProps {
+interface HideProductProps {
     open: boolean;
     setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    categoryId: number | null;
+    productIdToHide: number | null;
+    productStatusToHide: string | null;
 }
 
-const DeleteCategory: React.FC<DeleteCategoryProps> = ({ open, setOpen, categoryId }) => {
+const HideProduct: React.FC<HideProductProps> = ({ open, setOpen, productIdToHide, productStatusToHide }) => {
+
+    useEffect(() => {
+        if (open && productIdToHide !== null && productStatusToHide !== null) {
+            formik.setValues({
+                id: productIdToHide,
+                status: productStatusToHide === 'S1' ? 'S2' : 'S1',
+            });
+        }
+    }, [open, productIdToHide, productStatusToHide]);
+
+
+    const initialFormData = {
+        id: 0,
+        status: ''
+    };
 
     const mutation = useMutation({
-        mutationFn: () => deleteCategoryByIdApi(categoryId as number),
+        mutationFn: (data: typeof initialFormData) => updateProductApi(data as any),
         onSuccess: (data: any) => {
             if (data.status === 0) {
-                toast.success('Xóa thành công!');
+                toast.success('Thành công!');
+                setOpen(false);
                 setTimeout(() => {
-                    window.location.href = ROUTE.CATEGORY;
+                    window.location.href = ROUTE.PRODUCT;
                 }, 1500);
             } else if (data.status === 1) {
-                toast.error('Xóa thất bại!');
+                toast.error('Thất bại!');
             }
         },
         onError: (error: any) => {
-            console.error('Xóa thất bại!', error.response?.data);
-            toast.error('Xóa thất bại!');
+            console.error('Update failed', error.response?.data);
+            toast.error('Update failed');
         },
     });
 
-    const handleDelete = () => {
-        if (categoryId) {
-            mutation.mutate();
-        }
-    };
+    const formik = useFormik({
+        initialValues: initialFormData,
+        onSubmit: (values) => {
+            mutation.mutate(values);
+        },
+    });
 
     return (
         <>
@@ -59,7 +79,7 @@ const DeleteCategory: React.FC<DeleteCategoryProps> = ({ open, setOpen, category
                                     </div>
                                     <div className='mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left'>
                                         <DialogTitle as='h3' className='text-xl font-semibold leading-6 text-gray-900'>
-                                            Bạn muốn xóa danh mục này!
+                                            Bạn muốn {productStatusToHide === 'S1' ? 'xóa' : ''} dịch vụ này!
                                         </DialogTitle>
                                     </div>
                                 </div>
@@ -67,7 +87,7 @@ const DeleteCategory: React.FC<DeleteCategoryProps> = ({ open, setOpen, category
                             <div className='bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6'>
                                 <button
                                     type='button'
-                                    onClick={handleDelete}
+                                    onClick={() => formik.handleSubmit()}
                                     className='inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto'
                                 >
                                     Đồng ý
@@ -87,6 +107,6 @@ const DeleteCategory: React.FC<DeleteCategoryProps> = ({ open, setOpen, category
             </Dialog>
         </>
     );
-};
+}
 
-export default DeleteCategory;
+export default HideProduct;

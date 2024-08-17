@@ -9,38 +9,16 @@ import { toast } from 'react-toastify';
 import { createNewUser } from '@/api/user';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { useRouter } from 'next/navigation';
-
-interface FormData {
-    email: string;
-    password: string;
-    confirmPassword: string;
-    name: string;
-    phoneNumber: string;
-    address: string;
-    avatar: string | ArrayBuffer | null;
-    previewImgURL: string;
-    roleCheck: string;
-}
 
 const AddUser = () => {
 
-    const { user: currentUser, loading } = useAuth();
+    const { user, loading } = useAuth();
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
-    const router = useRouter();
 
-    useEffect(() => {
-
-        if (!loading && currentUser?.role !== 'R1') {
-            router.push(ROUTE.NOT_FOUND);
-        }
-
-    }, [currentUser?.role, router, loading]);
-
-    const initialFormData: FormData = {
+    const initialFormData = {
         email: '',
         password: '',
         confirmPassword: '',
@@ -102,7 +80,7 @@ const AddUser = () => {
         },
     });
 
-    if (!loading && currentUser?.role === 'R1') {
+    if (!loading && user?.role === 'R1') {
         return (
             <>
                 <div className='flex items-center pb-5'>
@@ -256,9 +234,6 @@ const AddUser = () => {
             </>
         );
     }
-
-    return null;
-
 };
 
 export default AddUser;

@@ -9,7 +9,6 @@ import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import { getAllCategoryApi } from '@/api/category';
 import { useAuth } from '@/hooks/useAuth';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { CategoryModel } from '@/models/category';
 import MDEditor from '@uiw/react-md-editor';
@@ -22,78 +21,27 @@ import CommonUtils from '@/utils/CommonUtils';
 import { UtilitiesModel } from '@/models/utilities';
 import { getAllUtilitiesApi } from '@/api/utilities';
 import { TIME_TS } from '@/constant/time';
-
-interface FormData {
-    userId: number;
-    title: string;
-    address: string;
-    price: string;
-    categoryId: string;
-    guests: string;
-    bedrooms: string;
-    beds: string;
-    bathrooms: string;
-    utilities: string[];
-    checkIn: string;
-    checkOut: string;
-    description: string;
-    images: Array<string | ArrayBuffer | null>;
-    previewImgURLs: string[];
-}
+import { provincesWithDistricts } from '@/constant/location';
 
 const animatedComponents = makeAnimated();
 
 const AddProduct = () => {
 
-    const { user: currentUser, loading } = useAuth();
-    const router = useRouter();
+    const { user, loading } = useAuth();
     const [categories, setCategories] = useState<CategoryModel[]>([]);
     const [utilities, setUtilities] = useState<UtilitiesModel[]>([]);
-
-    const initialFormData: FormData = {
-        userId: 0,
-        title: '',
-        address: '',
-        price: '',
-        categoryId: '',
-        guests: '',
-        bedrooms: '',
-        beds: '',
-        bathrooms: '',
-        utilities: [],
-        checkIn: '',
-        checkOut: '',
-        description: '',
-        images: [],
-        previewImgURLs: [],
-    };
-
-    const validationSchema = Yup.object({
-        title: Yup.string().required('Vui lòng nhập thông tin!'),
-        address: Yup.string().required('Vui lòng nhập thông tin!'),
-        price: Yup.string().required('Vui lòng nhập thông tin!'),
-        guests: Yup.number().required('Vui lòng nhập thông tin!'),
-        bedrooms: Yup.number().required('Vui lòng nhập thông tin!'),
-        beds: Yup.number().required('Vui lòng nhập thông tin!'),
-        bathrooms: Yup.number().required('Vui lòng nhập thông tin!'),
-        checkIn: Yup.string().required('Chọn thời gian nhận phòng!'),
-        checkOut: Yup.string().required('Chọn thời gian trả phòng!'),
-        description: Yup.string().required('Vui lòng nhập thông tin!'),
-    });
+    const [selectedProvince, setSelectedProvince] = useState<{ value: string; label: string } | null>(null);
 
     useEffect(() => {
-        if (!loading && currentUser?.role !== 'R2') {
-            router.push(ROUTE.NOT_FOUND);
-        }
 
-        if (currentUser) {
+        if (user) {
             formik.setValues({
                 ...initialFormData,
-                userId: currentUser.id,
+                userId: user.id,
             });
         }
 
-        if (currentUser?.role === 'R2') {
+        if (user?.role === 'R2') {
             const fetchCategoryData = async () => {
                 try {
                     const response = await getAllCategoryApi();
@@ -104,10 +52,6 @@ const AddProduct = () => {
                 }
             };
 
-            fetchCategoryData();
-        }
-
-        if (currentUser?.role === 'R2') {
             const fetchUtilitiesData = async () => {
                 try {
                     const response = await getAllUtilitiesApi();
@@ -118,10 +62,44 @@ const AddProduct = () => {
                 }
             };
 
+            fetchCategoryData();
             fetchUtilitiesData();
         }
 
-    }, [currentUser?.role, loading, router]);
+    }, [user, user?.role]);
+
+    const initialFormData = {
+        userId: 0,
+        title: '',
+        provinces: '',
+        districts: '',
+        price: '',
+        categoryId: '',
+        guests: '',
+        bedrooms: '',
+        beds: '',
+        bathrooms: '',
+        utilities: [] as string[],
+        checkIn: '',
+        checkOut: '',
+        description: '',
+        images: [] as (string | ArrayBuffer | null)[],
+        previewImgURLs: [] as string[],
+    };
+
+    const validationSchema = Yup.object({
+        title: Yup.string().required('Vui lòng nhập thông tin!'),
+        provinces: Yup.string().required('Vui lòng chọn tỉnh/thành phố!'),
+        districts: Yup.string().required('Vui lòng chọn quận/huyện!'),
+        price: Yup.string().required('Vui lòng nhập thông tin!'),
+        guests: Yup.number().required('Vui lòng nhập thông tin!'),
+        bedrooms: Yup.number().required('Vui lòng nhập thông tin!'),
+        beds: Yup.number().required('Vui lòng nhập thông tin!'),
+        bathrooms: Yup.number().required('Vui lòng nhập thông tin!'),
+        checkIn: Yup.string().required('Vui lòng chọn thời gian nhận phòng!'),
+        checkOut: Yup.string().required('Vui lòng chọn thời gian trả phòng!'),
+        description: Yup.string().required('Vui lòng nhập thông tin!'),
+    });
 
     const handleOnchangeImage = async (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
         const data = event.target.files;
@@ -151,6 +129,27 @@ const AddProduct = () => {
         newPreviewImgURLs.splice(index, 1);
         formik.setFieldValue('images', newImages);
         formik.setFieldValue('previewImgURLs', newPreviewImgURLs);
+    };
+
+    const provincesOptions = provincesWithDistricts.map(provinces => ({
+        value: provinces.id.toString(),
+        label: provinces.name,
+        districts: provinces.districts
+    }));
+
+    const handleProvincesChange = (selectedOption: { value: string; label: string } | null) => {
+        setSelectedProvince(selectedOption);
+        formik.setFieldValue('provinces', selectedOption ? selectedOption.label : '');
+    };
+    const districtsOptions = selectedProvince
+        ? provincesWithDistricts.find(province => province.id === selectedProvince.value)?.districts.map(district => ({
+            value: district,
+            label: district
+        })) || []
+        : [];
+
+    const handleDistrictsChange = (selectedOption: { value: string; label: string } | null) => {
+        formik.setFieldValue('districts', selectedOption ? selectedOption.label : '');
     };
 
     const categoryOptions = categories.map(category => ({
@@ -210,7 +209,7 @@ const AddProduct = () => {
         },
     });
 
-    if (!loading && currentUser?.role === 'R2') {
+    if (!loading && user?.role === 'R2') {
         return (
             <>
                 <div className="flex items-center pb-5">
@@ -274,36 +273,54 @@ const AddProduct = () => {
                                 <div className="text-primary">{formik.errors.title}</div>
                             ) : null}
                         </div>
-                        <div className="mb-4 w-full">
-                            <label htmlFor="address" className="block text-gray-700">Địa chỉ</label>
-                            <input
-                                id="address"
-                                name="address"
-                                type="text"
-                                className="block w-full mt-1 rounded-md border border-gray-300 py-2 px-4 bg-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                                value={formik.values.address}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                            />
-                            {formik.touched.address && formik.errors.address ? (
-                                <div className="text-primary">{formik.errors.address}</div>
-                            ) : null}
+                        <div className="flex items-center space-x-4 w-full mb-4">
+                            <div className="w-full">
+                                <label htmlFor="provinces" className="block text-gray-700">Chọn tỉnh/thành phố</label>
+                                <Select
+                                    id='provinces'
+                                    className=''
+                                    value={provincesOptions.find(option => option.label === formik.values.provinces) || null}
+                                    onChange={(option) => handleProvincesChange(option as any)}
+                                    options={provincesOptions}
+                                    placeholder='Chọn tỉnh/thành phố'
+                                />
+                                {formik.touched.provinces && formik.errors.provinces ? (
+                                    <div className="text-primary">{formik.errors.provinces}</div>
+                                ) : null}
+                            </div>
+                            <div className="w-full">
+                                <label htmlFor="districts" className="block text-gray-700">Chọn quận/huyện</label>
+                                <Select
+                                    id='districts'
+                                    className=''
+                                    value={districtsOptions.find(option => option.value === formik.values.districts) || null}
+                                    onChange={(option) => handleDistrictsChange(option as any)}
+                                    options={districtsOptions}
+                                    placeholder='Chọn quận/huyện'
+                                />
+                                {formik.touched.districts && formik.errors.districts ? (
+                                    <div className="text-primary">{formik.errors.districts}</div>
+                                ) : null}
+                            </div>
                         </div>
                         <div className="flex items-center space-x-4 w-full mb-4">
                             <div className="w-full">
-                                <label htmlFor="price" className="block text-gray-700">Giá/đêm</label>
-                                <NumericFormat
-                                    id="price"
-                                    name="price"
-                                    className="block w-full mt-1 rounded-md border border-gray-300 py-2 px-4 bg-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                                    value={formik.values.price}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    allowLeadingZeros
-                                    allowNegative={false}
-                                    thousandsGroupStyle="thousand"
-                                    thousandSeparator=","
-                                />
+                                <label htmlFor="price" className="block text-gray-700 ">Giá/đêm</label>
+                                <div className="relative">
+                                    <NumericFormat
+                                        id="price"
+                                        name="price"
+                                        className="block w-full mt-1 rounded-md border border-gray-300 py-2 px-4 bg-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                        value={formik.values.price}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        allowLeadingZeros
+                                        allowNegative={false}
+                                        thousandsGroupStyle="none"
+                                        thousandSeparator=","
+                                    />
+                                    <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500">VND</span>
+                                </div>
                                 {formik.touched.price && formik.errors.price ? (
                                     <div className="text-primary">{formik.errors.price}</div>
                                 ) : null}
@@ -460,9 +477,6 @@ const AddProduct = () => {
             </>
         );
     }
-
-    return null;
-
 };
 
 export default AddProduct;

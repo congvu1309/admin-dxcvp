@@ -10,29 +10,12 @@ import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import { createNewUtilitiesApi } from '@/api/utilities';
 import { useAuth } from '@/hooks/useAuth';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-
-interface FormData {
-    title: string;
-    image: string | ArrayBuffer | null;
-    previewImgURL: string;
-}
 
 const AddUtilities = () => {
 
-    const { user: currentUser, loading } = useAuth();
-    const router = useRouter();
+    const { user, loading } = useAuth();
 
-    useEffect(() => {
-
-        if (!loading && currentUser?.role !== 'R1') {
-            router.push(ROUTE.NOT_FOUND);
-        }
-
-    }, [currentUser?.role,router]);
-
-    const initialFormData: FormData = {
+    const initialFormData = {
         title: '',
         image: '',
         previewImgURL: '',
@@ -82,7 +65,7 @@ const AddUtilities = () => {
     });
 
 
-    if (!loading && currentUser?.role === 'R1') {
+    if (!loading && user?.role === 'R1') {
         return (
             <>
                 <div className='flex items-center pb-5'>
@@ -141,9 +124,6 @@ const AddUtilities = () => {
             </>
         );
     }
-
-    return null;
-
 }
 
 export default AddUtilities;

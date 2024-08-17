@@ -3,7 +3,7 @@
 import { ROUTE } from '@/constant/enum';
 import { ArrowLeft, Image, Pen, Trash } from 'lucide-react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import CommonUtils from '@/utils/CommonUtils';
@@ -14,30 +14,17 @@ import { useMutation } from 'react-query';
 import DeleteCategory from './DeleteCategory';
 import { useAuth } from '@/hooks/useAuth';
 
-interface FormData {
-    id: number;
-    title: string;
-    image: string | ArrayBuffer | null;
-    previewImgURL: string;
-}
-
 const EditCategory = () => {
 
     const params = useParams();
     const id = parseInt(params.id as string, 10);
+    const { user, loading } = useAuth();
     const [open, setOpen] = useState(false);
     const [categoryId, setCategoryId] = useState<number | null>(null);
-    const { user: currentUser, loading } = useAuth();
-    const router = useRouter();
 
     useEffect(() => {
 
-        if (!loading && currentUser?.role !== 'R1') {
-            router.push(ROUTE.NOT_FOUND);
-        }
-
-        if (currentUser?.role === 'R1') {
-
+        if (user?.role === 'R1') {
             const fetchCategory = async () => {
                 try {
                     const response = await getCategoryByIdApi(id);
@@ -66,10 +53,10 @@ const EditCategory = () => {
             }
         }
 
-    }, [loading, currentUser?.role, id, router]);
+    }, [user?.role, id]);
 
 
-    const initialFormData: FormData = {
+    const initialFormData = {
         id: 0,
         title: '',
         image: '',
@@ -106,7 +93,8 @@ const EditCategory = () => {
             }
         },
         onError: (error: any) => {
-            console.log('Cập nhật thất bại!', error.response?.data);
+            toast.error('Cập nhật thất bại!');
+            console.log('Cập nhật thất bại!', error);
         },
     });
 
@@ -123,7 +111,7 @@ const EditCategory = () => {
         setCategoryId(categoryId);
     };
 
-    if (!loading && currentUser?.role === 'R1') {
+    if (!loading && user?.role === 'R1') {
         return (
             <>
                 <div className='flex items-center pb-5'>
@@ -189,10 +177,7 @@ const EditCategory = () => {
                 />
             </>
         );
-    }
-
-    return null;
-
-}
+    };
+};
 
 export default EditCategory;

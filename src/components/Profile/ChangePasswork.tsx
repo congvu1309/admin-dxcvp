@@ -11,12 +11,6 @@ import { toast } from 'react-toastify';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 
-interface FormData {
-    id: number;
-    password: string;
-    confirmPassword: string;
-}
-
 const ChangePassword = () => {
 
     const { user } = useAuth();
@@ -24,20 +18,8 @@ const ChangePassword = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
 
-    const initialFormData: FormData = {
-        id: 0,
-        password: '',
-        confirmPassword: '',
-    };
-
-    const validationSchema = Yup.object({
-        password: Yup.string().min(8, 'Mật khẩu cần dài ít nhất 8 ký tự').required('Vui lòng nhập thông tin!'),
-        confirmPassword: Yup.string()
-            .oneOf([Yup.ref('password')], 'Mật khẩu phải trùng khớp!')
-            .required('Vui lòng nhập thông tin!'),
-    });
-
     useEffect(() => {
+
         const fetchUserById = async () => {
             try {
                 if (id) {
@@ -56,7 +38,21 @@ const ChangePassword = () => {
         };
 
         fetchUserById();
+        
     }, [id]);
+
+    const initialFormData = {
+        id: 0,
+        password: '',
+        confirmPassword: '',
+    };
+
+    const validationSchema = Yup.object({
+        password: Yup.string().min(8, 'Mật khẩu cần dài ít nhất 8 ký tự').required('Vui lòng nhập thông tin!'),
+        confirmPassword: Yup.string()
+            .oneOf([Yup.ref('password')], 'Mật khẩu phải trùng khớp!')
+            .required('Vui lòng nhập thông tin!'),
+    });
 
     const mutation = useMutation({
         mutationFn: (data: typeof initialFormData) => updateUserApi(data as any),

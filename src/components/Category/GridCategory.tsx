@@ -10,18 +10,14 @@ import { useAuth } from '@/hooks/useAuth';
 
 const GridCategory = () => {
 
-    const { user: currentUser, loading } = useAuth();
+    const { user, loading } = useAuth();
     const router = useRouter();
     const [categories, setCategories] = useState<CategoryModel[]>([]);
     const [searchCategory, setSearchCategory] = useState('');
 
     useEffect(() => {
 
-        if (!loading && currentUser?.role !== 'R1') {
-            router.push(ROUTE.NOT_FOUND);
-        }
-
-        if (currentUser?.role === 'R1') {
+        if (user?.role === 'R1') {
             const fetchCategoryData = async () => {
                 try {
                     const response = await getAllCategoryApi();
@@ -34,7 +30,7 @@ const GridCategory = () => {
             fetchCategoryData();
         }
 
-    }, [loading, currentUser?.role, router]);
+    }, [user?.role]);
 
     const filteredCategory = categories.filter(category => {
         const matchesSearchTerm = category.title.toLowerCase().includes(searchCategory.toLowerCase());
@@ -45,7 +41,7 @@ const GridCategory = () => {
         router.push(`${ROUTE.EDIT_CATEGORY}/${categoryId}`);
     }
 
-    if (!loading && currentUser?.role === 'R1') {
+    if (!loading && user?.role === 'R1') {
         return (
             <>
                 <div className='overflow-x-auto'>
@@ -59,7 +55,7 @@ const GridCategory = () => {
                             if (category.image) {
                                 imageBase64 = Buffer.from(category.image, 'base64').toString('binary');
                             }
-
+    
                             return (
                                 <div
                                     key={category.id}
@@ -81,9 +77,7 @@ const GridCategory = () => {
                 </div>
             </>
         );
-    }
-
-    return null;
-}
+    };
+};
 
 export default GridCategory;

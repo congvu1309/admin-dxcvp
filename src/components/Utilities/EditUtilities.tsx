@@ -3,7 +3,7 @@
 import { ROUTE } from '@/constant/enum';
 import { ArrowLeft, Image, Pen, Trash } from 'lucide-react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import CommonUtils from '@/utils/CommonUtils';
@@ -14,29 +14,17 @@ import { getUtilitiesByIdApi, updateUtilitiesApi } from '@/api/utilities';
 import DeleteUtilities from './DeleteUtilities';
 import { useAuth } from '@/hooks/useAuth';
 
-interface FormData {
-    id: number;
-    title: string;
-    image: string | ArrayBuffer | null;
-    previewImgURL: string;
-}
-
 const EditUtilities = () => {
 
     const params = useParams();
     const id = parseInt(params.id as string, 10);
+    const { user, loading } = useAuth();
     const [open, setOpen] = useState(false);
     const [utilitiesId, setUtilitiesId] = useState<number | null>(null);
-    const { user: currentUser, loading } = useAuth();
-    const router = useRouter();
 
     useEffect(() => {
 
-        if (!loading && currentUser?.role !== 'R1') {
-            router.push(ROUTE.NOT_FOUND);
-        }
-
-        if (currentUser?.role === 'R1') {
+        if (user?.role === 'R1') {
             const fetchUtilities = async () => {
                 try {
                     const response = await getUtilitiesByIdApi(id);
@@ -64,9 +52,10 @@ const EditUtilities = () => {
                 fetchUtilities();
             }
         }
-    }, [id, currentUser?.role, router]);
 
-    const initialFormData: FormData = {
+    }, [id, user?.role]);
+
+    const initialFormData = {
         id: 0,
         title: '',
         image: '',
@@ -120,7 +109,7 @@ const EditUtilities = () => {
         setUtilitiesId(id);
     };
 
-    if (!loading && currentUser?.role === 'R1') {
+    if (!loading && user?.role === 'R1') {
         return (
             <>
                 <div className='flex items-center pb-5'>
@@ -187,9 +176,6 @@ const EditUtilities = () => {
             </>
         );
     }
-
-    return null;
-
 }
 
 export default EditUtilities;

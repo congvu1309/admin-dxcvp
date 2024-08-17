@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Image } from 'lucide-react';
 import { ROUTE } from '@/constant/enum';
@@ -8,46 +8,19 @@ import { useParams, useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import { getUserByIdApi } from '@/api/user';
 import { useAuth } from '@/hooks/useAuth';
-
-interface FormData {
-    id: number;
-    email: string;
-    name: string;
-    phoneNumber: string;
-    address: string;
-    avatar: string | ArrayBuffer | null;
-    previewImgURL: string;
-    role: string;
-    status: string;
-}
+import { useFormik } from 'formik';
+import { useMutation } from 'react-query';
 
 const InfoUser = () => {
 
-    const initialFormData: FormData = {
-        id: 0,
-        email: '',
-        name: '',
-        phoneNumber: '',
-        address: '',
-        avatar: '',
-        previewImgURL: '',
-        role: '',
-        status: ''
-    };
-
-    const [formData, setFormData] = useState<FormData>(initialFormData);
     const params = useParams();
     const id = parseInt(params.id as string, 10);
-    const { user: currentUser, loading } = useAuth();
+    const { user, loading } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
 
-        if (!loading && currentUser?.role !== 'R1') {
-            router.push(ROUTE.NOT_FOUND);
-        }
-
-        if (currentUser?.role === 'R1') {
+        if (user?.role === 'R1') {
             const fetchUser = async () => {
                 try {
                     const response = await getUserByIdApi(id);
@@ -57,8 +30,8 @@ const InfoUser = () => {
                     if (userData.avatar) {
                         imageBase64 = Buffer.from(userData.avatar, 'base64').toString('binary');
                     }
-
-                    setFormData({
+                    formik.setValues({
+                        ...initialFormData,
                         id: userData.id,
                         email: userData.email,
                         name: userData.name,
@@ -66,9 +39,10 @@ const InfoUser = () => {
                         address: userData.address,
                         previewImgURL: imageBase64,
                         role: userData.role,
-                        avatar: null,
+                        avatar: imageBase64,
                         status: userData.status
                     });
+
                 } catch (error) {
                     console.error('Failed to fetch user data', error);
                     toast.error('Failed to fetch user data');
@@ -80,9 +54,47 @@ const InfoUser = () => {
             }
         }
 
-    }, [id, currentUser?.role, router]);
+    }, [id, user?.role, router]);
 
-    if (!loading && currentUser?.role === 'R1') {
+    const initialFormData = {
+        id: 0,
+        email: '',
+        name: '',
+        phoneNumber: '',
+        address: '',
+        avatar: '',
+        previewImgURL: '',
+        role: '',
+        status: ''
+    };
+
+    const mutation = useMutation({
+        mutationFn: (data: typeof initialFormData) => (data as any),
+        onSuccess: (data: any) => {
+            if (data.status === 0) {
+                toast.success('Cập nhật thành công!');
+                setTimeout(() => {
+                    window.location.href = ROUTE.CATEGORY;
+                }, 1500);
+            } else if (data.status === 1) {
+                toast.error('Cập nhật thất bại!');
+            }
+        },
+        onError: (error: any) => {
+            toast.error('Cập nhật thất bại!');
+            console.log('Cập nhật thất bại!', error);
+        },
+    });
+
+    const formik = useFormik({
+        initialValues: initialFormData,
+        onSubmit: (values) => {
+            mutation.mutate(values);
+        },
+    });
+
+
+    if (!loading && user?.role === 'R1') {
         return (
             <>
                 <div className='flex items-center pb-5'>
@@ -93,101 +105,100 @@ const InfoUser = () => {
                         <span className='text-2xl font-semibold'>Thông tin tài khoản</span>
                     </div>
                 </div>
-                <div className='flex flex-col justify-center items-center'>
-                    <div className='h-44 w-44 ring-1 ring-inset ring-gray-300 rounded-full flex items-center justify-center text-2xl font-semibold bg-slate-100 relative cursor-not-allowed'>
-                        {formData.previewImgURL ? (
-                            <img src={formData.previewImgURL} alt='Avatar' className='h-full w-full rounded-full' />
-                        ) : (
-                            <div>{!formData.previewImgURL && <Image className='w-10 h-10' />}</div>
-                        )}
-                        <input
-                            id='previewImg'
-                            type='file'
-                            hidden
-                        />
-                    </div>
-                    <div className='mt-8 flex space-x-8'>
-                        <div className='w-96'>
-                            <div className='mb-4'>
-                                <label htmlFor='email' className='block text-gray-700'>Email</label>
-                                <input
-                                    id='email'
-                                    name='email'
-                                    type='email'
-                                    className='block w-full mt-1 rounded-md border-[1px] border-gray-300 py-2 px-4 bg-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 cursor-not-allowed'
-                                    value={formData.email}
-                                    disabled
-                                />
+                <form onSubmit={formik.handleSubmit}>
+                    <div className='flex flex-col justify-center items-center'>
+                        <div className='h-44 w-44 ring-1 ring-inset ring-gray-300 rounded-full flex items-center justify-center text-2xl font-semibold bg-slate-100 relative cursor-not-allowed'>
+                            {formik.values.previewImgURL ? (
+                                <img src={formik.values.previewImgURL} alt='Avatar' className='h-full w-full rounded-full' />
+                            ) : (
+                                <div>{!formik.values.previewImgURL && <Image className='w-10 h-10' />}</div>
+                            )}
+                            <input
+                                id='previewImg'
+                                type='file'
+                                hidden
+                            />
+                        </div>
+                        <div className='mt-8 flex space-x-8'>
+                            <div className='w-96'>
+                                <div className='mb-4'>
+                                    <label htmlFor='email' className='block text-gray-700'>Email</label>
+                                    <input
+                                        id='email'
+                                        name='email'
+                                        type='email'
+                                        className='block w-full mt-1 rounded-md border-[1px] border-gray-300 py-2 px-4 bg-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 cursor-not-allowed'
+                                        value={formik.values.email}
+                                        disabled
+                                    />
+                                </div>
+                                <div className='mb-4'>
+                                    <label htmlFor='role' className='block text-gray-700'>Vai trò</label>
+                                    <input
+                                        id='role'
+                                        name='role'
+                                        type='text'
+                                        className='block w-full mt-1 rounded-md border-[1px] border-gray-300 py-2 px-4 bg-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 cursor-not-allowed'
+                                        value={formik.values.role === 'R2' ? 'Người cung cấp dịch vụ' : 'Admin'}
+                                        disabled
+                                    />
+                                </div>
+                                <div className='mb-4'>
+                                    <label htmlFor='status' className='block text-gray-700'>Trạng thái</label>
+                                    <input
+                                        id='status'
+                                        name='status'
+                                        type='text'
+                                        className='block w-full mt-1 rounded-md border-[1px] border-gray-300 py-2 px-4 bg-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 cursor-not-allowed'
+                                        value={formik.values.status === 'S1' ? 'Hoạt động' : 'Chặn'}
+                                        disabled
+                                    />
+                                </div>
                             </div>
-                            <div className='mb-4'>
-                                <label htmlFor='role' className='block text-gray-700'>Vai trò</label>
-                                <input
-                                    id='role'
-                                    name='role'
-                                    type='text'
-                                    className='block w-full mt-1 rounded-md border-[1px] border-gray-300 py-2 px-4 bg-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 cursor-not-allowed'
-                                    value={formData.role === 'R2' ? 'Người cung cấp dịch vụ' : 'Admin'}
-                                    disabled
-                                />
-                            </div>
-                            <div className='mb-4'>
-                                <label htmlFor='status' className='block text-gray-700'>Trạng thái</label>
-                                <input
-                                    id='status'
-                                    name='status'
-                                    type='text'
-                                    className='block w-full mt-1 rounded-md border-[1px] border-gray-300 py-2 px-4 bg-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 cursor-not-allowed'
-                                    value={formData.status === 'S1' ? 'Hoạt động' : 'Chặn'}
-                                    disabled
-                                />
+                            <div className='w-96'>
+                                <div className='mb-4'>
+                                    <label htmlFor='name' className='block text-gray-700'>Họ và tên</label>
+                                    <input
+                                        id='name'
+                                        name='name'
+                                        type='text'
+                                        className='block w-full mt-1 rounded-md border-[1px] border-gray-300 py-2 px-4 bg-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500
+                                    cursor-not-allowed'
+                                        value={formik.values.name}
+                                        disabled
+                                    />
+                                </div>
+                                <div className='mb-4'>
+                                    <label htmlFor='phoneNumber' className='block text-gray-700'>Số điện thoại</label>
+                                    <input
+                                        id='phoneNumber'
+                                        name='phoneNumber'
+                                        type='text'
+                                        className='block w-full mt-1 rounded-md border-[1px] border-gray-300 py-2 px-4 bg-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500
+                                    cursor-not-allowed'
+                                        value={formik.values.phoneNumber}
+                                        disabled
+                                    />
+                                </div>
+                                <div className='mb-4'>
+                                    <label htmlFor='address' className='block text-gray-700'>Địa chỉ</label>
+                                    <input
+                                        id='address'
+                                        name='address'
+                                        type='text'
+                                        className='block w-full mt-1 rounded-md border-[1px] border-gray-300 py-2 px-4 bg-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500
+                                    cursor-not-allowed'
+                                        value={formik.values.address}
+                                        disabled
+                                    />
+                                </div>
                             </div>
                         </div>
-                        <div className='w-96'>
-                            <div className='mb-4'>
-                                <label htmlFor='name' className='block text-gray-700'>Họ và tên</label>
-                                <input
-                                    id='name'
-                                    name='name'
-                                    type='text'
-                                    className='block w-full mt-1 rounded-md border-[1px] border-gray-300 py-2 px-4 bg-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500
-                                    cursor-not-allowed'
-                                    value={formData.name}
-                                    disabled
-                                />
-                            </div>
-                            <div className='mb-4'>
-                                <label htmlFor='phoneNumber' className='block text-gray-700'>Số điện thoại</label>
-                                <input
-                                    id='phoneNumber'
-                                    name='phoneNumber'
-                                    type='text'
-                                    className='block w-full mt-1 rounded-md border-[1px] border-gray-300 py-2 px-4 bg-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500
-                                    cursor-not-allowed'
-                                    value={formData.phoneNumber}
-                                    disabled
-                                />
-                            </div>
-                            <div className='mb-4'>
-                                <label htmlFor='address' className='block text-gray-700'>Địa chỉ</label>
-                                <input
-                                    id='address'
-                                    name='address'
-                                    type='text'
-                                    className='block w-full mt-1 rounded-md border-[1px] border-gray-300 py-2 px-4 bg-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500
-                                    cursor-not-allowed'
-                                    value={formData.address}
-                                    disabled
-                                />
-                            </div>
-                        </div>
                     </div>
-                </div>
+                </form>
             </>
         );
     }
-
-    return null;
-
 }
 
 export default InfoUser;

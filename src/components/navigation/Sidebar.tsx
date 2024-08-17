@@ -3,12 +3,7 @@
 import { ReactNode, useMemo } from 'react';
 import Link from 'next/link';
 import Logo from '@/public/favicon.ico';
-import {
-    Menu,
-    MenuButton,
-    MenuItem,
-    MenuItems
-} from '@headlessui/react';
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { ROUTE, UserRoleEnum } from '@/constant/enum';
 import { useAuth } from '@/hooks/useAuth';
 import { NavLinkProps, ROUTES_ADMIN, ROUTES_MANAGER, ROUTES } from '@/constant/routes';

@@ -10,29 +10,12 @@ import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import { createNewCategoryApi } from '@/api/category';
 import { useAuth } from '@/hooks/useAuth';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-
-interface FormData {
-    title: string;
-    image: string | ArrayBuffer | null;
-    previewImgURL: string;
-}
 
 const AddCategory = () => {
 
-    const { user: currentUser, loading } = useAuth();
-    const router = useRouter();
+    const { user, loading } = useAuth();
 
-    useEffect(() => {
-
-        if (!loading && currentUser?.role !== 'R1') {
-            router.push(ROUTE.NOT_FOUND);
-        }
-
-    }, [loading, currentUser?.role,router]);
-
-    const initialFormData: FormData = {
+    const initialFormData = {
         title: '',
         image: '',
         previewImgURL: '',
@@ -81,7 +64,7 @@ const AddCategory = () => {
         },
     });
 
-    if (!loading && currentUser?.role === 'R1') {
+    if (!loading && user?.role === 'R1') {
         return (
             <>
                 <div className='flex items-center pb-5'>
@@ -139,10 +122,7 @@ const AddCategory = () => {
                 </form>
             </>
         );
-    }
-
-    return null;
-
-}
+    };
+};
 
 export default AddCategory;

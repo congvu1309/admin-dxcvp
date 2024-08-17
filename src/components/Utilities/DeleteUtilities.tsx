@@ -59,7 +59,7 @@ const DeleteUtilities: React.FC<DeleteUtilitiesProps> = ({ open, setOpen, utilit
                                     </div>
                                     <div className='mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left'>
                                         <DialogTitle as='h3' className='text-xl font-semibold leading-6 text-gray-900'>
-                                            Bạn muốn xóa danh mục này!
+                                            Bạn muốn xóa tiện ích này!
                                         </DialogTitle>
                                     </div>
                                 </div>

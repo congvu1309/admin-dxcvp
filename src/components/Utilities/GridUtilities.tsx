@@ -1,27 +1,23 @@
 'use client';
 
-import { getAllUtilitiesApi } from "@/api/utilities";
-import { ROUTE } from "@/constant/enum";
-import { useAuth } from "@/hooks/useAuth";
-import { UtilitiesModel } from "@/models/utilities";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import SearchUtilities from "./SearchUtilities";
+import { getAllUtilitiesApi } from '@/api/utilities';
+import { ROUTE } from '@/constant/enum';
+import { useAuth } from '@/hooks/useAuth';
+import { UtilitiesModel } from '@/models/utilities';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import SearchUtilities from './SearchUtilities';
 
 const GridUtilities = () => {
 
-    const { user: currentUser, loading } = useAuth();
+    const { user, loading } = useAuth();
     const router = useRouter();
     const [utilities, setUtilities] = useState<UtilitiesModel[]>([]);
     const [searchUtilities, setSearchUtilities] = useState('');
 
     useEffect(() => {
 
-        if (!loading && currentUser?.role !== 'R1') {
-            router.push(ROUTE.NOT_FOUND);
-        }
-
-        if (currentUser?.role === 'R1') {
+        if (user?.role === 'R1') {
             const fetchCategoryData = async () => {
                 try {
                     const response = await getAllUtilitiesApi();
@@ -34,7 +30,7 @@ const GridUtilities = () => {
             fetchCategoryData();
         }
 
-    }, [currentUser?.role]);
+    }, [user?.role]);
 
     const filteredUtility = utilities.filter(utility => {
         const matchesSearchTerm = utility.title.toLowerCase().includes(searchUtilities.toLowerCase());
@@ -45,7 +41,7 @@ const GridUtilities = () => {
         router.push(`${ROUTE.EDIT_UTILITY}/${utilityId}`);
     }
 
-    if (!loading && currentUser?.role === 'R1') {
+    if (!loading && user?.role === 'R1') {
         return (
             <>
                 <div className='overflow-x-auto'>
@@ -82,8 +78,6 @@ const GridUtilities = () => {
             </>
         );
     }
-
-    return null;
 }
 
 export default GridUtilities;

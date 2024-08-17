@@ -16,20 +16,25 @@ interface BanUserProps {
     userStatus: string | null;
 }
 
-interface FormData {
-    id: number;
-    status: string;
-}
-
 const BanUser: React.FC<BanUserProps> = ({ open, setOpen, userId, userStatus }) => {
 
-    const initialFormData: FormData = {
+    useEffect(() => {
+        if (open && userId !== null && userStatus !== null) {
+            formik.setValues({
+                id: userId,
+                status: userStatus === 'S1' ? 'S2' : 'S1',
+            });
+        }
+    }, [open, userId, userStatus]);
+
+
+    const initialFormData = {
         id: 0,
         status: ''
     };
 
     const mutation = useMutation({
-        mutationFn: (data: FormData) => updateUserApi(data as any),
+        mutationFn: (data: typeof initialFormData) => updateUserApi(data as any),
         onSuccess: (data: any) => {
             if (data.status === 0) {
                 toast.success('Thành công!');
@@ -53,15 +58,6 @@ const BanUser: React.FC<BanUserProps> = ({ open, setOpen, userId, userStatus }) 
             mutation.mutate(values);
         },
     });
-
-    useEffect(() => {
-        if (open && userId !== null && userStatus !== null) {
-            formik.setValues({
-                id: userId,
-                status: userStatus === 'S1' ? 'S2' : 'S1',
-            });
-        }
-    }, [open, userId, userStatus]);
 
     return (
         <>

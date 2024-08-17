@@ -12,48 +12,12 @@ import { toast } from 'react-toastify';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 
-interface FormData {
-    id: number;
-    name: string;
-    phoneNumber: string;
-    address: string;
-    avatar: string | ArrayBuffer | null;
-    previewImgURL: string;
-}
-
 const Profile = () => {
     const { user } = useAuth();
     const id = user?.id;
 
-    const initialFormData: FormData = {
-        id: 0,
-        name: '',
-        phoneNumber: '',
-        address: '',
-        avatar: '',
-        previewImgURL: '',
-    };
-
-    const validationSchema = Yup.object({
-        name: Yup.string().required('Vui lòng nhập thông tin!'),
-        phoneNumber: Yup.string().required('Vui lòng nhập thông tin!'),
-        address: Yup.string().required('Vui lòng nhập thông tin!'),
-    });
-
-    const handleOnchangeImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const data = event.target.files;
-        if (data && data.length > 0) {
-            const file = data[0];
-            if (file) {
-                const base64 = await CommonUtils.getBase64(file);
-                const objectUrl = URL.createObjectURL(file);
-                formik.setFieldValue('previewImgURL', objectUrl);
-                formik.setFieldValue('avatar', base64);
-            }
-        }
-    };
-
     useEffect(() => {
+
         const fetchUserById = async () => {
             try {
                 if (id) {
@@ -81,7 +45,36 @@ const Profile = () => {
         };
 
         fetchUserById();
+        
     }, [id]);
+
+    const initialFormData = {
+        id: 0,
+        name: '',
+        phoneNumber: '',
+        address: '',
+        avatar: '',
+        previewImgURL: '',
+    };
+
+    const validationSchema = Yup.object({
+        name: Yup.string().required('Vui lòng nhập thông tin!'),
+        phoneNumber: Yup.string().required('Vui lòng nhập thông tin!'),
+        address: Yup.string().required('Vui lòng nhập thông tin!'),
+    });
+
+    const handleOnchangeImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const data = event.target.files;
+        if (data && data.length > 0) {
+            const file = data[0];
+            if (file) {
+                const base64 = await CommonUtils.getBase64(file);
+                const objectUrl = URL.createObjectURL(file);
+                formik.setFieldValue('previewImgURL', objectUrl);
+                formik.setFieldValue('avatar', base64);
+            }
+        }
+    };
 
     const mutation = useMutation({
         mutationFn: (data: typeof initialFormData) => updateUserApi(data as any),

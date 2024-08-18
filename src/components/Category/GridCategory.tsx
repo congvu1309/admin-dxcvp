@@ -35,7 +35,7 @@ const GridCategory = () => {
     const filteredCategory = categories.filter(category => {
         const matchesSearchTerm = category.title.toLowerCase().includes(searchCategory.toLowerCase());
         return matchesSearchTerm;
-    });
+    }).reverse();
 
     const handleViewDetailCategory = (categoryId: any) => {
         router.push(`${ROUTE.EDIT_CATEGORY}/${categoryId}`);

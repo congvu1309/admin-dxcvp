@@ -15,6 +15,7 @@ export class ProductModel {
     utilities: any = null;
     description: string = '';
     status: string = '';
+    createdAt: string = '';
 
     constructor(auth?: ProductModel) {
         if (auth) {

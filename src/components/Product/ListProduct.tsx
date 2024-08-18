@@ -40,7 +40,7 @@ const ListProduct = () => {
         .filter(product => {
             const matchesSearchTerm = product.title.toLowerCase().includes(searchProduct.toLowerCase());
             return matchesSearchTerm;
-        });
+        }).reverse();
 
     const handleViewDetailProduct = (productId: any) => {
         router.push(`${ROUTE.EDIT_PRODUCT}/${productId}`);

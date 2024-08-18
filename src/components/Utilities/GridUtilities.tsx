@@ -35,7 +35,7 @@ const GridUtilities = () => {
     const filteredUtility = utilities.filter(utility => {
         const matchesSearchTerm = utility.title.toLowerCase().includes(searchUtilities.toLowerCase());
         return matchesSearchTerm;
-    });
+    }).reverse();
 
     const handleViewDetailUtility = (utilityId: any) => {
         router.push(`${ROUTE.EDIT_UTILITY}/${utilityId}`);

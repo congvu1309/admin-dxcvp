@@ -16,7 +16,6 @@ import MDEditor from '@uiw/react-md-editor';
 import rehypeSanitize from "rehype-sanitize";
 import Select, { MultiValue } from 'react-select';
 import makeAnimated from 'react-select/animated';
-import { NumericFormat } from 'react-number-format';
 import CommonUtils from '@/utils/CommonUtils';
 import { UtilitiesModel } from '@/models/utilities';
 import { getAllUtilitiesApi } from '@/api/utilities';
@@ -202,6 +201,23 @@ const EditProduct = () => {
         formik.setFieldValue('districts', selectedOption ? selectedOption.label : '');
     };
 
+    const formatNumber = (value: any) => {
+        // Remove non-numeric characters except decimal point
+        const cleanedValue = value.replace(/\D/g, '');
+        // Format the number with commas
+        const formattedValue = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        return formattedValue;
+    };
+
+    const handleChangePrice = (event: any) => {
+        // Get the raw value
+        const rawValue = event.target.value;
+        // Format the number
+        const formattedValue = formatNumber(rawValue);
+        // Update formik value and input field
+        formik.setFieldValue('price', formattedValue);
+    };
+
     const categoryOptions = categories.map(category => ({
         value: category.id.toString(),
         label: category.title,
@@ -363,17 +379,14 @@ const EditProduct = () => {
                             <div className="w-full">
                                 <label htmlFor="price" className="block text-gray-700">Giá/đêm</label>
                                 <div className="relative">
-                                    <NumericFormat
+                                    <input
                                         id="price"
                                         name="price"
+                                        type='text'
                                         className="block w-full mt-1 rounded-md border border-gray-300 py-2 px-4 bg-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                                        value={formik.values.price}
-                                        onChange={formik.handleChange}
+                                        value={formatNumber(formik.values.price)}
+                                        onChange={handleChangePrice}
                                         onBlur={formik.handleBlur}
-                                        allowLeadingZeros
-                                        allowNegative={false}
-                                        thousandsGroupStyle="none"
-                                        thousandSeparator=","
                                     />
                                     <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500">VND</span>
                                 </div>

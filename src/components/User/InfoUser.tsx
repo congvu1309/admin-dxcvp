@@ -93,7 +93,6 @@ const InfoUser = () => {
         },
     });
 
-
     if (!loading && user?.role === 'R1') {
         return (
             <>

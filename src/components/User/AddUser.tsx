@@ -194,7 +194,9 @@ const AddUser = () => {
                                     <input
                                         id='phoneNumber'
                                         name='phoneNumber'
-                                        type='text'
+                                        type='number'
+                                        inputMode='numeric'
+                                        pattern='[0-9]*'
                                         className='block w-full mt-1 rounded-md border-[1px] border-gray-300 py-2 px-4 bg-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500'
                                         value={formik.values.phoneNumber}
                                         onChange={formik.handleChange}

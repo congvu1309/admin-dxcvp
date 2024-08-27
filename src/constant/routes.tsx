@@ -64,6 +64,6 @@ export const ROUTES_MANAGER: NavLinkProps[] = [
     {
         title: 'Lịch hẹn',
         icon: <CalendarDays size={18} />,
-        href: ROUTE.PRODUCT,
+        href: ROUTE.SCHEDULE,
     },
 ];

@@ -11,6 +11,7 @@ import defaultImage from '@/public/no-image.jpg';
 import Image from 'next/image';
 
 const ListProduct = () => {
+    
     const { user, loading } = useAuth();
     const router = useRouter();
     const [products, setProducts] = useState<ProductModel[]>([]);

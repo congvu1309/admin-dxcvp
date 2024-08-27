@@ -16,6 +16,8 @@ export enum ROUTE {
     ADD_PRODUCT = '/dashboard/product/add',
     EDIT_PRODUCT = '/dashboard/product/edit',
     NOT_FOUND = '/not-found',
+    SCHEDULE = '/dashboard/schedule',
+    INFO_SCHEDULE = '/dashboard/schedule/info'
 }
 
 export enum UserRoleEnum {

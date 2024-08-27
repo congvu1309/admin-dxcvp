@@ -4,16 +4,18 @@ import { loginApi } from '@/api/user';
 import { ROUTE } from '@/constant/enum';
 import { useMutation } from 'react-query';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useAuth } from '@/hooks/useAuth';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
+import { EyeOff, Eye } from 'lucide-react';
 
 const LoginForm = () => {
 
     const { user, loading } = useAuth();
     const router = useRouter();
+    const [showPassword, setShowPassword] = useState(false);
 
     useEffect(() => {
         if (!loading && user) {
@@ -95,15 +97,23 @@ const LoginForm = () => {
                                     <div>
                                         <label htmlFor='password' className='text-xl font-medium'>Mật khẩu</label>
                                         <div className='mt-2'>
-                                            <input
-                                                id='password'
-                                                name='password'
-                                                type='password'
-                                                className='w-full border-2 p-3 rounded-lg outline-none'
-                                                value={formik.values.password}
-                                                onChange={formik.handleChange}
-                                                onBlur={formik.handleBlur}
-                                            />
+                                            <div className="relative">
+                                                <input
+                                                    id='password'
+                                                    name='password'
+                                                    type={showPassword ? 'text' : 'password'}
+                                                    className='w-full border-2 p-3 rounded-lg outline-none'
+                                                    value={formik.values.password}
+                                                    onChange={formik.handleChange}
+                                                    onBlur={formik.handleBlur}
+                                                />
+                                                <div
+                                                    className='absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer'
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                >
+                                                    {showPassword ? <EyeOff className='h-5 w-5' /> : <Eye className='h-5 w-5' />}
+                                                </div>
+                                            </div>
                                             {formik.touched.password && formik.errors.password ? (
                                                 <div className='text-primary'>{formik.errors.password}</div>
                                             ) : null}

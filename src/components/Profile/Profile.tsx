@@ -45,7 +45,7 @@ const Profile = () => {
         };
 
         fetchUserById();
-        
+
     }, [id]);
 
     const initialFormData = {
@@ -114,10 +114,10 @@ const Profile = () => {
             <form onSubmit={formik.handleSubmit}>
                 <div className='flex flex-col justify-center items-center'>
                     <div className='h-44 w-44 ring-1 ring-inset ring-gray-300 rounded-full flex items-center justify-center text-2xl font-semibold bg-slate-100 relative bg-no-repeat bg-center bg-cover'>
-                        {user?.avatar && formik.values.previewImgURL ? (
+                        {formik.values.previewImgURL ? (
                             <img src={formik.values.previewImgURL} alt='Avatar' className='h-full w-full rounded-full' />
                         ) : (
-                            <span>{user?.name.charAt(0).toUpperCase()}</span>
+                            <span className='text-5xl'>{user?.name.charAt(0).toUpperCase()}</span>
                         )}
                         <input
                             id='previewImg'

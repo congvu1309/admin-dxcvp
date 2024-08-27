@@ -66,7 +66,7 @@ const GridUtilities = () => {
                                         <img
                                             src={imageBase64}
                                             alt={utility.title}
-                                            className='mt-2 rounded-md mr-7 h-12 w-12'
+                                            className='rounded-md mr-7 h-12 w-12'
                                         />
                                         <h2 className='text-xl font-semibold'>{utility.title}</h2>
                                     </div>

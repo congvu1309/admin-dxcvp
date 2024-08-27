@@ -124,7 +124,7 @@ const EditCategory = () => {
                 </div>
                 <form onSubmit={formik.handleSubmit}>
                     <div className='flex flex-col justify-center items-center'>
-                        <div className='h-48 w-48 ring-1 ring-inset ring-gray-300 flex rounded items-center justify-center text-2xl font-semibold bg-slate-100 relative'>
+                        <div className='h-48 w-48 ring-1 ring-inset ring-gray-300 flex rounded items-center justify-center text-2xl font-semibold bg-slate-100 relative p-4'>
                             {formik.values.previewImgURL ? (
                                 <img src={formik.values.previewImgURL} alt='Avatar' className='h-full w-full rounded' />
                             ) : (

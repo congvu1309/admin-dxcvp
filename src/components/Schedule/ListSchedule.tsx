@@ -80,20 +80,20 @@ const ListSchedule = () => {
         return (
             <>
                 <div className='overflow-x-auto'>
-
                     <table className='min-w-full bg-white'>
                         <thead className='text-black'>
                             <tr>
-                                <th className='w-2/12 text-left'>Người đại diện</th>
-                                <th className='w-2/12 text-left'>Số điện thoại</th>
-                                <th className='w-2/12 text-left'>Ngày</th>
-                                <th className='w-2/12 text-left'>Thành tiền</th>
-                                <th className='w-2/12 text-left'>Trạng thái</th>
-                                <th className='w-2/12 text-left'></th>
+                                <th className='w-2/14 text-left'>Người đại diện</th>
+                                <th className='w-2/14 text-left'>Số điện thoại</th>
+                                <th className='w-2/14 text-left'>Ngày</th>
+                                <th className='w-2/14 text-left'>Thành tiền</th>
+                                <th className='w-2/14 text-left'>Dịch vụ</th>
+                                <th className='w-2/14 text-left'>Trạng thái</th>
+                                <th className='w-2/14 text-left'></th>
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredSchedules.length > 0 && filteredSchedules.map((schedule) => {
+                            {filteredSchedules.length > 0 ? filteredSchedules.map((schedule) => {
 
                                 let imageSrc = defaultImage.src;
                                 const imageProductData = schedule.image;
@@ -108,7 +108,7 @@ const ListSchedule = () => {
 
                                 return (
                                     <tr
-                                        key={user.id}
+                                        key={schedule.id}
                                         className={`border-b border-gray-200`}
                                     >
                                         <td className='py-4'>
@@ -123,13 +123,20 @@ const ListSchedule = () => {
                                         <td className='py-4'>{schedule.phoneNumber}</td>
                                         <td className='py-4'>{schedule.startDate} - {schedule.endDate}</td>
                                         <td className='py-4'>{schedule.pay}</td>
+                                        <td className='py-4'>{schedule.productScheduleData.title}</td>
                                         <td className='py-4'>
-                                            {schedule.status === 'accept'
-                                                ? 'Chuẩn bị phòng'
-                                                : schedule.status === 'refuse'
-                                                    ? 'Đã từ chối'
-                                                    : 'Đang chờ xử lý'
-                                            }
+                                            <td className='py-4'>
+                                                {schedule.status === 'accept'
+                                                    ? 'Chuẩn bị phòng'
+                                                    : schedule.status === 'refuse'
+                                                        ? 'Đã từ chối'
+                                                        : schedule.status === 'canceled'
+                                                            ? 'Đã hủy'
+                                                            : schedule.status === 'completed'
+                                                                ? 'Hoàn thành'
+                                                                : 'Đang chờ xử lý'
+                                                }
+                                            </td>
                                         </td>
                                         <td className='py-4'>
                                             <button
@@ -159,7 +166,9 @@ const ListSchedule = () => {
                                         </td>
                                     </tr>
                                 );
-                            })}
+                            }) : (
+                                <div className="text-center pt-20 text-xl">Chưa có lịch hẹn nào</div>
+                            )}
                         </tbody>
                     </table>
                 </div>

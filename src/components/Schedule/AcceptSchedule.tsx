@@ -22,7 +22,7 @@ const AcceptSchedule: React.FC<AcceptScheduleProps> = ({ openAccept, setOpenAcce
         if (openAccept && scheduleIdToAccept !== null && scheduleStatusToAccept !== null) {
             formik.setValues({
                 id: scheduleIdToAccept,
-                status: scheduleStatusToAccept === 'pending' ? 'accept' : '',
+                status: scheduleStatusToAccept === 'pending' ? 'accept' : 'completed',
             });
         }
     }, [openAccept, scheduleIdToAccept, scheduleStatusToAccept]);
@@ -79,7 +79,7 @@ const AcceptSchedule: React.FC<AcceptScheduleProps> = ({ openAccept, setOpenAcce
                                     </div>
                                     <div className='mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left'>
                                         <DialogTitle as='h3' className='text-xl font-semibold leading-6 text-gray-900'>
-                                            Bạn chấp nhận yêu cầu này!
+                                            {scheduleStatusToAccept === 'pending' ? 'Bạn chấp nhận yêu cầu này!' : 'Yêu cầu này hoàn thành!'}
                                         </DialogTitle>
                                     </div>
                                 </div>

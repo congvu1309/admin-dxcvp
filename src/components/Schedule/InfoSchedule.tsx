@@ -108,6 +108,22 @@ const InfoSchedule = () => {
                                 </button>
                             </>
                         )}
+                        {schedule?.status === 'accept' && (
+                            <>
+                                <button
+                                    className='bg-green-600 text-white px-2 py-1 mx-5 rounded hover:bg-green-700'
+                                    onClick={() => handleAccept(schedule?.id, schedule?.status)}
+                                >
+                                    <Check />
+                                </button>
+                                <button
+                                    className='bg-red-300 text-white px-2 py-1 rounded hover:bg-red-500'
+                                    onClick={() => handleRefuse(schedule?.id, schedule?.status)}
+                                >
+                                    <X />
+                                </button>
+                            </>
+                        )}
                     </div>
                 </div>
                 <AcceptSchedule

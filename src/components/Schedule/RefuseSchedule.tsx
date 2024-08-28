@@ -22,7 +22,7 @@ const RefuseSchdedule: React.FC<RefuseSchdeduleProps> = ({ openRefuse, setOpenRe
         if (openRefuse && scheduleIdToRefuse !== null && scheduleStatusToRefuse !== null) {
             formik.setValues({
                 id: scheduleIdToRefuse,
-                status: scheduleStatusToRefuse === 'pending' ? 'refuse' : '',
+                status: scheduleStatusToRefuse === 'pending' ? 'refuse' : 'canceled',
             });
         }
     }, [openRefuse, scheduleIdToRefuse, scheduleStatusToRefuse]);
@@ -79,7 +79,7 @@ const RefuseSchdedule: React.FC<RefuseSchdeduleProps> = ({ openRefuse, setOpenRe
                                     </div>
                                     <div className='mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left'>
                                         <DialogTitle as='h3' className='text-xl font-semibold leading-6 text-gray-900'>
-                                            Bạn chắn chằn từ chối yêu cầu này!
+                                            Bạn chắn chằn {scheduleStatusToRefuse === 'pending' ? 'từ chối' : 'hủy'} yêu cầu này!
                                         </DialogTitle>
                                     </div>
                                 </div>

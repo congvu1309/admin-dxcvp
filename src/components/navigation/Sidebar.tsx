@@ -114,7 +114,7 @@ const Sidebar = ({ children }: Readonly<{ children: ReactNode }>) => {
             >
                 <div className='h-full pt-2 px-3 pb-4 overflow-y-auto'>
                     <ul className='space-y-2 font-medium text-black'>
-                        <RenderRoutes routes={[...ROUTES, ...routesForRole]} />
+                        <RenderRoutes routes={[...routesForRole]} />
                     </ul>
                 </div>
             </aside >

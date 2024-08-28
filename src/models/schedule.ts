@@ -9,6 +9,8 @@ export class ScheduleModel {
     image: string = '';
     phoneNumber: string = '';
     productScheduleData: any = null;
+    userScheduleData: any = null;
+    userProductData: any = null;
     pay: string = '';
     status: string = '';
 

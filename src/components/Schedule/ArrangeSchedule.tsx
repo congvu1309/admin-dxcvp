@@ -9,23 +9,23 @@ import { toast } from 'react-toastify';
 import { useFormik } from 'formik';
 import { updateScheduleApi } from '@/api/schedule';
 
-interface AcceptScheduleProps {
-    openAccept: boolean;
-    setOpenAccept: React.Dispatch<React.SetStateAction<boolean>>;
-    scheduleIdToAccept: number | null;
-    scheduleStatusToAccept: string | null;
+interface ArrangeSchdeduleProps {
+    openArrange: boolean;
+    setOpenArrange: React.Dispatch<React.SetStateAction<boolean>>;
+    scheduleIdToArrange: number | null;
+    scheduleStatusToArrange: string | null;
 }
 
-const AcceptSchedule: React.FC<AcceptScheduleProps> = ({ openAccept, setOpenAccept, scheduleIdToAccept, scheduleStatusToAccept }) => {
+const ArrangeSchdedule: React.FC<ArrangeSchdeduleProps> = ({ openArrange, setOpenArrange, scheduleIdToArrange, scheduleStatusToArrange }) => {
 
     useEffect(() => {
-        if (openAccept && scheduleIdToAccept !== null && scheduleStatusToAccept !== null) {
+        if (openArrange && scheduleIdToArrange !== null && scheduleStatusToArrange !== null) {
             formik.setValues({
-                id: scheduleIdToAccept,
-                status: scheduleStatusToAccept === 'pending' ? 'accept' : scheduleStatusToAccept = 'arrange' ? 'accept' : 'completed',
+                id: scheduleIdToArrange,
+                status: scheduleStatusToArrange === 'pending' ? 'arrange' : 'accept',
             });
         }
-    }, [openAccept, scheduleIdToAccept, scheduleStatusToAccept]);
+    }, [openArrange, scheduleIdToArrange, scheduleStatusToArrange]);
 
 
     const initialFormData = {
@@ -38,7 +38,7 @@ const AcceptSchedule: React.FC<AcceptScheduleProps> = ({ openAccept, setOpenAcce
         onSuccess: (data: any) => {
             if (data.status === 0) {
                 toast.success('Thành công!');
-                setOpenAccept(false);
+                setOpenArrange(false);
                 setTimeout(() => {
                     window.location.href = ROUTE.SCHEDULE;
                 }, 1500);
@@ -61,7 +61,7 @@ const AcceptSchedule: React.FC<AcceptScheduleProps> = ({ openAccept, setOpenAcce
 
     return (
         <>
-            <Dialog open={openAccept} onClose={() => setOpenAccept(false)} className='relative z-10'>
+            <Dialog open={openArrange} onClose={() => setOpenArrange(false)} className='relative z-10'>
                 <DialogBackdrop
                     transition
                     className='fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in'
@@ -79,10 +79,7 @@ const AcceptSchedule: React.FC<AcceptScheduleProps> = ({ openAccept, setOpenAcce
                                     </div>
                                     <div className='mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left'>
                                         <DialogTitle as='h3' className='text-xl font-semibold leading-6 text-gray-900'>
-                                            {scheduleStatusToAccept === 'pending' ?
-                                                'Bạn chấp nhận yêu cầu này!' :
-                                                scheduleStatusToAccept === 'arrange' ?
-                                                    'Bạn chấp nhận yêu cầu này!' : 'Yêu cầu này đã hoàn thành!'}
+                                            {scheduleStatusToArrange === 'pending' ? 'Chờ sắp xếp' : 'Bạn chắc chắn chấp nhận'} yêu cầu này!
                                         </DialogTitle>
                                     </div>
                                 </div>
@@ -98,7 +95,7 @@ const AcceptSchedule: React.FC<AcceptScheduleProps> = ({ openAccept, setOpenAcce
                                 <button
                                     type='button'
                                     data-autofocus
-                                    onClick={() => setOpenAccept(false)}
+                                    onClick={() => setOpenArrange(false)}
                                     className='mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto'
                                 >
                                     Đóng
@@ -112,4 +109,4 @@ const AcceptSchedule: React.FC<AcceptScheduleProps> = ({ openAccept, setOpenAcce
     );
 }
 
-export default AcceptSchedule;
+export default ArrangeSchdedule;

@@ -76,7 +76,7 @@ const InfoSchedule = () => {
                     </div>
                 </div>
                 <div className="flex flex-col items-center">
-                    <div className='h-44 w-44 ring-1 ring-inset ring-gray-300 rounded-full flex items-center justify-center text-2xl font-semibold bg-slate-100 relative cursor-not-allowed'>
+                    <div className='h-52 w-52 ring-1 ring-inset ring-gray-300 rounded-full flex items-center justify-center text-2xl font-semibold bg-slate-100 relative cursor-not-allowed'>
                         {imageBase64 ? (
                             <img src={imageBase64} alt='Avatar' className='h-full w-full rounded-full' />
                         ) : (
@@ -109,6 +109,22 @@ const InfoSchedule = () => {
                             </>
                         )}
                         {schedule?.status === 'accept' && (
+                            <>
+                                <button
+                                    className='bg-green-600 text-white px-2 py-1 mx-5 rounded hover:bg-green-700'
+                                    onClick={() => handleAccept(schedule?.id, schedule?.status)}
+                                >
+                                    <Check />
+                                </button>
+                                <button
+                                    className='bg-red-300 text-white px-2 py-1 rounded hover:bg-red-500'
+                                    onClick={() => handleRefuse(schedule?.id, schedule?.status)}
+                                >
+                                    <X />
+                                </button>
+                            </>
+                        )}
+                        {schedule?.status === 'arrange' && (
                             <>
                                 <button
                                     className='bg-green-600 text-white px-2 py-1 mx-5 rounded hover:bg-green-700'

@@ -1,13 +1,13 @@
 'use client';
 
-interface SearchRevenueProps {
+interface SearchScheduleProps {
     searchSchedule: string;
     setSearchSchedule: React.Dispatch<React.SetStateAction<string>>;
     searchSelected: string;
     setSearchSelected: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const SearchRevenue: React.FC<SearchRevenueProps> = ({ searchSchedule, setSearchSchedule, searchSelected, setSearchSelected }) => {
+const SearchSchedule: React.FC<SearchScheduleProps> = ({ searchSchedule, setSearchSchedule, searchSelected, setSearchSelected }) => {
 
     return (
         <>
@@ -18,7 +18,7 @@ const SearchRevenue: React.FC<SearchRevenueProps> = ({ searchSchedule, setSearch
                         <input
                             id='searchInput'
                             type='text'
-                            placeholder='Tìm kiếm theo ngày hoặc tên nhà cung cấp'
+                            placeholder='Tìm kiếm theo ngày'
                             value={searchSchedule}
                             onChange={(e) => setSearchSchedule(e.target.value)}
                             className='block w-full rounded-md border-0 py-2 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
@@ -34,7 +34,7 @@ const SearchRevenue: React.FC<SearchRevenueProps> = ({ searchSchedule, setSearch
                         >
                             <option value='ALL'>Tất cả</option>
                             <option value='pending'>Đang chờ xử lý</option>
-                            <option value='arrangr'>Đang chờ sắp xếp</option>
+                            <option value='arrange'>Đang chờ sắp xếp</option>
                             <option value='accept'>Chuẩn bị phòng</option>
                             <option value='completed'>Hoàn thành</option>
                             <option value='refuse'>Đã từ chối</option>
@@ -47,4 +47,4 @@ const SearchRevenue: React.FC<SearchRevenueProps> = ({ searchSchedule, setSearch
     );
 }
 
-export default SearchRevenue;
+export default SearchSchedule;

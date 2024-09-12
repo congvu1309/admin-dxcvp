@@ -20,13 +20,22 @@ const AcceptSchedule: React.FC<AcceptScheduleProps> = ({ openAccept, setOpenAcce
 
     useEffect(() => {
         if (openAccept && scheduleIdToAccept !== null && scheduleStatusToAccept !== null) {
+            let newStatus = '';
+
+            if (scheduleStatusToAccept === 'pending') {
+                newStatus = 'accept';
+            } else if (scheduleStatusToAccept === 'accept') {
+                newStatus = 'in-use';
+            } else if (scheduleStatusToAccept === 'in-use') {
+                newStatus = 'completed';
+            }
+
             formik.setValues({
                 id: scheduleIdToAccept,
-                status: scheduleStatusToAccept === 'pending' ? 'accept' : scheduleStatusToAccept = 'arrange' ? 'accept' : 'completed',
+                status: newStatus,
             });
         }
     }, [openAccept, scheduleIdToAccept, scheduleStatusToAccept]);
-
 
     const initialFormData = {
         id: 0,
@@ -59,6 +68,16 @@ const AcceptSchedule: React.FC<AcceptScheduleProps> = ({ openAccept, setOpenAcce
         },
     });
 
+    const message = (() => {
+        if (scheduleStatusToAccept === 'pending') {
+            return 'Bạn chấp nhận yêu cầu này!';
+        } else if (scheduleStatusToAccept === 'in-use') {
+            return 'Hoàn thành yêu cầu này!';
+        } else {
+            return 'Khách đã nhận phòng!';
+        }
+    })();
+
     return (
         <>
             <Dialog open={openAccept} onClose={() => setOpenAccept(false)} className='relative z-10'>
@@ -79,10 +98,7 @@ const AcceptSchedule: React.FC<AcceptScheduleProps> = ({ openAccept, setOpenAcce
                                     </div>
                                     <div className='mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left'>
                                         <DialogTitle as='h3' className='text-xl font-semibold leading-6 text-gray-900'>
-                                            {scheduleStatusToAccept === 'pending' ?
-                                                'Bạn chấp nhận yêu cầu này!' :
-                                                scheduleStatusToAccept === 'arrange' ?
-                                                    'Bạn chấp nhận yêu cầu này!' : 'Yêu cầu này đã hoàn thành!'}
+                                            <span>{message}</span>
                                         </DialogTitle>
                                     </div>
                                 </div>

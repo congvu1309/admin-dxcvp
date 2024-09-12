@@ -18,7 +18,8 @@ export enum ROUTE {
     NOT_FOUND = '/not-found',
     SCHEDULE = '/dashboard/schedule',
     INFO_SCHEDULE = '/dashboard/schedule/info',
-    REVENUE = '/dashboard/revenue'
+    REVENUE = '/dashboard/revenue',
+    MONTHLY_SCHEDULE = '/dashboard/monthly-schedules'
 }
 
 export enum UserRoleEnum {

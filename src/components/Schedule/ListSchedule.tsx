@@ -5,15 +5,15 @@ import { useAuth } from "@/hooks/useAuth";
 import { ProductModel } from "@/models/product";
 import { ScheduleModel } from "@/models/schedule";
 import { useEffect, useState } from "react";
-import { getAllScheduleBySearch, getAllScheduleByUserId } from "@/api/schedule";
-import { Check, CircleAlert, Loader } from "lucide-react";
+import { getAllScheduleBySearch } from "@/api/schedule";
+import { Check, CircleAlert, X } from "lucide-react";
 import defaultImage from '@/public/no-image.jpg';
 import Image from 'next/image';
 import { ROUTE } from "@/constant/enum";
 import { useRouter } from "next/navigation";
 import AcceptSchedule from "./AcceptSchedule";
-import ArrangeSchdedule from "./ArrangeSchedule";
 import SearchSchedule from "./SearchSchedule";
+import RefuseSchdedule from "./RefuseSchedule";
 
 const ListSchedule = () => {
     const { user, loading } = useAuth();
@@ -23,9 +23,9 @@ const ListSchedule = () => {
     const [openAccept, setOpenAccept] = useState(false);
     const [scheduleIdToAccept, setScheduleIdToAccept] = useState<number | null>(null);
     const [scheduleStatusToAccept, setScheduleStatusToAccept] = useState<string | null>(null);
-    const [openArrange, setOpenArrange] = useState(false);
-    const [scheduleIdToArrange, setScheduleIdToArrange] = useState<number | null>(null);
-    const [scheduleStatusToArrange, setScheduleStatusToArrange] = useState<string | null>(null);
+    const [openRefuse, setOpenRefuse] = useState(false);
+    const [scheduleIdToRefuse, setScheduleIdToRefuse] = useState<number | null>(null);
+    const [scheduleStatusToRefuse, setScheduleStatusToRefuse] = useState<string | null>(null);
     const [searchSchedule, setSearchSchedule] = useState('');
     const [searchSelected, setSearchSelected] = useState<string>('ALL');
     const [currentPage, setCurrentPage] = useState(1);
@@ -72,14 +72,48 @@ const ListSchedule = () => {
         setScheduleStatusToAccept(status);
     };
 
-    const handleArrange = (scheduleId: any, status: string) => {
-        setOpenArrange(true);
-        setScheduleIdToArrange(scheduleId);
-        setScheduleStatusToArrange(status);
+    const handleRefuse = (scheduleId: number, status: string) => {
+        setOpenRefuse(true);
+        setScheduleIdToRefuse(scheduleId);
+        setScheduleStatusToRefuse(status);
     };
 
     const goToPage = (page: number) => {
         setCurrentPage(page);
+    };
+
+    const getStatusColor = (status: any) => {
+        switch (status) {
+            case 'accept':
+                return 'bg-green-500';
+            case 'refuse':
+                return 'bg-red-500';
+            case 'canceled':
+                return 'bg-yellow-500';
+            case 'completed':
+                return 'bg-blue-500';
+            case 'in-use':
+                return 'bg-purple-500';
+            default:
+                return 'bg-gray-500';
+        }
+    };
+
+    const getStatusLabel = (status: any) => {
+        switch (status) {
+            case 'accept':
+                return 'Chuẩn bị phòng';
+            case 'refuse':
+                return 'Đã từ chối';
+            case 'canceled':
+                return 'Đã hủy';
+            case 'completed':
+                return 'Hoàn thành';
+            case 'in-use':
+                return 'Khách đã nhận phòng';
+            default:
+                return 'Đang chờ xử lý';
+        }
     };
 
     if (!loading && user?.role === 'R2') {
@@ -144,19 +178,10 @@ const ListSchedule = () => {
                                             <td className='py-4 text-center'>{schedule.pay}</td>
                                             <td className='py-4 text-center w-[270px]'>{schedule.productScheduleData.title}</td>
                                             <td className='py-4 text-center'>
-                                                {
-                                                    schedule.status === 'accept'
-                                                        ? 'Chuẩn bị phòng'
-                                                        : schedule.status === 'refuse'
-                                                            ? 'Đã từ chối'
-                                                            : schedule.status === 'canceled'
-                                                                ? 'Đã hủy'
-                                                                : schedule.status === 'completed'
-                                                                    ? 'Hoàn thành'
-                                                                    : schedule.status === 'arrange'
-                                                                        ? 'Đang chờ sắp xếp'
-                                                                        : 'Đang chờ xử lý'
-                                                }
+                                                <span className="flex items-center justify-center">
+                                                    <span className={`w-2 h-2 rounded-full mr-2 ${getStatusColor(schedule.status)}`}></span>
+                                                    {getStatusLabel(schedule.status)}
+                                                </span>
                                             </td>
                                             <td className='py-4 text-center'>
                                                 <button
@@ -176,10 +201,10 @@ const ListSchedule = () => {
                                                         </button>
 
                                                         <button
-                                                            className='bg-primary-foreground text-white px-2 py-1 rounded hover:bg-primary'
-                                                            onClick={() => handleArrange(schedule.id, schedule.status)}
+                                                            className='bg-red-300 text-white px-2 py-1 rounded hover:bg-red-500'
+                                                            onClick={() => handleRefuse(schedule?.id, schedule?.status)}
                                                         >
-                                                            <Loader />
+                                                            <X />
                                                         </button>
                                                     </>
                                                 )}
@@ -214,18 +239,17 @@ const ListSchedule = () => {
                         </ul>
                     </nav>
                 </div>
-
                 <AcceptSchedule
                     openAccept={openAccept}
                     setOpenAccept={setOpenAccept}
                     scheduleIdToAccept={scheduleIdToAccept}
                     scheduleStatusToAccept={scheduleStatusToAccept}
                 />
-                <ArrangeSchdedule
-                    openArrange={openArrange}
-                    setOpenArrange={setOpenArrange}
-                    scheduleIdToArrange={scheduleIdToArrange}
-                    scheduleStatusToArrange={scheduleStatusToArrange}
+                <RefuseSchdedule
+                    openRefuse={openRefuse}
+                    setOpenRefuse={setOpenRefuse}
+                    scheduleIdToRefuse={scheduleIdToRefuse}
+                    scheduleStatusToRefuse={scheduleStatusToRefuse}
                 />
             </>
         );

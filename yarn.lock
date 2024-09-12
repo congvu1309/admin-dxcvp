@@ -359,6 +359,11 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
+"@kurkle/color@^0.3.0":
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@kurkle/color/-/color-0.3.2.tgz#5acd38242e8bde4f9986e7913c8fdf49d3aa199f"
+  integrity sha512-fuscdXJ9G1qb7W8VdHi+IwRqij3lBkosAm4ydQtEmbY58OzHXqQhvlxqEkoz0yssNVn38bcpRWgA9PP+OGoisw==
+
 "@next/env@14.2.5":
   version "14.2.5"
   resolved "https://registry.yarnpkg.com/@next/env/-/env-14.2.5.tgz#1d9328ab828711d3517d0a1d505acb55e5ef7ad0"
@@ -522,95 +527,6 @@
   integrity sha512-KMZNXiGibsW9kvZAO1Pam2JPTDBm+KSHMMHWdsyI/1DbIZjT2A6Gy3hblVXUMEDvUAKq+e0vL0X0o54owWji7g==
   dependencies:
     tslib "^2.4.0"
-
-"@syncfusion/ej2-base@~26.2.5":
-  version "26.2.5"
-  resolved "https://registry.yarnpkg.com/@syncfusion/ej2-base/-/ej2-base-26.2.5.tgz#943f600d506c5dc060027debb86f801d673bff40"
-  integrity sha512-GfB77Jb//FLXdHC8mqnwcl3F3RqH+XPOQNOhNVxfkcpT50iMzfaXqH4F+rwAa0PkVN+8JcWDH0U3/29nUtG4KA==
-  dependencies:
-    "@syncfusion/ej2-icons" "~26.2.5"
-
-"@syncfusion/ej2-buttons@~26.2.5":
-  version "26.2.7"
-  resolved "https://registry.yarnpkg.com/@syncfusion/ej2-buttons/-/ej2-buttons-26.2.7.tgz#1fd586702f9f5d84bc7d691f9c8b506069476a9b"
-  integrity sha512-WZtrOPcSd3CCil4weWQsVAjK+TzHWUobp5l9HJ4JfLYY3LsQOFLEroTFLeCAT/bUhKJyXBI0vrhFApPZmpPv8w==
-  dependencies:
-    "@syncfusion/ej2-base" "~26.2.5"
-
-"@syncfusion/ej2-calendars@26.2.5":
-  version "26.2.5"
-  resolved "https://registry.yarnpkg.com/@syncfusion/ej2-calendars/-/ej2-calendars-26.2.5.tgz#06be7bb24ccdefd9b2ac39287047bf6ce482c3fc"
-  integrity sha512-UuNl9EEooNNNwBaAx3NL8SZsfNft7+EbC7QZjhxmC3IYx2foBEO0tY2SsEoeqPuJY5iznVx5SZbU5he41it0cA==
-  dependencies:
-    "@syncfusion/ej2-base" "~26.2.5"
-    "@syncfusion/ej2-buttons" "~26.2.5"
-    "@syncfusion/ej2-inputs" "~26.2.5"
-    "@syncfusion/ej2-lists" "~26.2.5"
-    "@syncfusion/ej2-popups" "~26.2.5"
-
-"@syncfusion/ej2-data@~26.2.5":
-  version "26.2.5"
-  resolved "https://registry.yarnpkg.com/@syncfusion/ej2-data/-/ej2-data-26.2.5.tgz#eefe7d8a3fe77c6cbd2229d4b5f37e7f610f4cd5"
-  integrity sha512-7k/3qjtmK78Ierrxy6F7WsxVEOrNZTP+b80FO0++1hwOH6m3NpLMK7WosKzkvDTKXMJ/UjKg5cIeDZRcVf4xaQ==
-  dependencies:
-    "@syncfusion/ej2-base" "~26.2.5"
-
-"@syncfusion/ej2-icons@~26.2.5":
-  version "26.2.5"
-  resolved "https://registry.yarnpkg.com/@syncfusion/ej2-icons/-/ej2-icons-26.2.5.tgz#6c8ff866409503c705447a000a5ae7049715a8f5"
-  integrity sha512-UmsDTEoi3uFyoLTmDujAfVn3Eq4vzoaIvZru8WqLoZlxuAg+tF1zHcsbQBWGopjzr9LOWjqthy3gNAZJqJBtKA==
-
-"@syncfusion/ej2-inputs@~26.2.5":
-  version "26.2.5"
-  resolved "https://registry.yarnpkg.com/@syncfusion/ej2-inputs/-/ej2-inputs-26.2.5.tgz#76cc6eaa1b5ff69ed0db28a24652492050474f01"
-  integrity sha512-rqrwXbRA1CBdaKDzFWlpSy62yBt+PLHBFanUOWHObDGSFcXnXKjD7l3Uamqa1cBZnb2XJfC3vxqwcw8Bunu7mg==
-  dependencies:
-    "@syncfusion/ej2-base" "~26.2.5"
-    "@syncfusion/ej2-buttons" "~26.2.5"
-    "@syncfusion/ej2-popups" "~26.2.5"
-    "@syncfusion/ej2-splitbuttons" "~26.2.5"
-
-"@syncfusion/ej2-lists@~26.2.5":
-  version "26.2.5"
-  resolved "https://registry.yarnpkg.com/@syncfusion/ej2-lists/-/ej2-lists-26.2.5.tgz#74f6c3c5b0d40e9eeb4a6eee6085428d2c0616a8"
-  integrity sha512-KLr14XyyT4UbWTBJiksv7+1oy4iVMeCF/U48KNS6sJww/FNL/CJtk2W1kmjRD8PrngCYwmZ01pW7r2xYMjCwaA==
-  dependencies:
-    "@syncfusion/ej2-base" "~26.2.5"
-    "@syncfusion/ej2-buttons" "~26.2.5"
-    "@syncfusion/ej2-data" "~26.2.5"
-    "@syncfusion/ej2-popups" "~26.2.5"
-
-"@syncfusion/ej2-popups@~26.2.5":
-  version "26.2.5"
-  resolved "https://registry.yarnpkg.com/@syncfusion/ej2-popups/-/ej2-popups-26.2.5.tgz#b8ff81764e7e37bed8d0db3a2bbd08c6a6902b78"
-  integrity sha512-v/TXMnmlfbypaO7RrXIfXOyHOYa9pw3UapDzqi/lU1ojM8SlR1LwAEHaMJpkiWaKEdpKiNxiE3Tb3BRkEPfTNg==
-  dependencies:
-    "@syncfusion/ej2-base" "~26.2.5"
-    "@syncfusion/ej2-buttons" "~26.2.5"
-
-"@syncfusion/ej2-react-base@~26.2.5":
-  version "26.2.5"
-  resolved "https://registry.yarnpkg.com/@syncfusion/ej2-react-base/-/ej2-react-base-26.2.5.tgz#b1e7c1082c65132afa419fac408defdaa4b46da6"
-  integrity sha512-46eZgJbqJKS5Uzp4Q+vcaQpXW+BDawppVSiMOqYuFt8gaSjo8F6QO6MN5ev2ch9PIGRItVCmys34OTA3WmQV8A==
-  dependencies:
-    "@syncfusion/ej2-base" "~26.2.5"
-
-"@syncfusion/ej2-react-calendars@^26.2.5":
-  version "26.2.5"
-  resolved "https://registry.yarnpkg.com/@syncfusion/ej2-react-calendars/-/ej2-react-calendars-26.2.5.tgz#6f755fd1b1c9fb639bade86f90b5f5adaf7c7568"
-  integrity sha512-v2jn1VVtFD1NhPIAT6+z0WypS9s3ndau5yFuXUNt7vUGXpk8ZVkQPZO9GDxLwpCeJg8j6YDl7u3grtm/CXWBew==
-  dependencies:
-    "@syncfusion/ej2-base" "~26.2.5"
-    "@syncfusion/ej2-calendars" "26.2.5"
-    "@syncfusion/ej2-react-base" "~26.2.5"
-
-"@syncfusion/ej2-splitbuttons@~26.2.5":
-  version "26.2.5"
-  resolved "https://registry.yarnpkg.com/@syncfusion/ej2-splitbuttons/-/ej2-splitbuttons-26.2.5.tgz#f879a2ed35418849cc4efc87b1c47bc093d4cde6"
-  integrity sha512-N3mQ0ln9py5cidyj74qamzi9i0xo/xMHB/+cfr8bj67pPnZl+62W9Wqw/sO0KAJetwcUjjHQ/78m1tlEFg38rg==
-  dependencies:
-    "@syncfusion/ej2-base" "~26.2.5"
-    "@syncfusion/ej2-popups" "~26.2.5"
 
 "@tanstack/query-core@5.51.9":
   version "5.51.9"
@@ -1221,6 +1137,13 @@ character-reference-invalid@^2.0.0:
   resolved "https://registry.yarnpkg.com/character-reference-invalid/-/character-reference-invalid-2.0.1.tgz#85c66b041e43b47210faf401278abf808ac45cb9"
   integrity sha512-iBZ4F4wRbyORVsu0jPV7gXkOsGYjGHPmAyv+HiHG8gi5PtC9KI2j1+v8/tlibRvjoWX027ypmG/n0HtO5t7unw==
 
+chart.js@^4.4.4:
+  version "4.4.4"
+  resolved "https://registry.yarnpkg.com/chart.js/-/chart.js-4.4.4.tgz#b682d2e7249f7a0cbb1b1d31c840266ae9db64b7"
+  integrity sha512-emICKGBABnxhMjUjlYRR12PmOXhJ2eJjEHL2/dZlWjxRAZT1D8xplLFq5M0tMQK8ja+wBS/tuVEJB5C6r7VxJA==
+  dependencies:
+    "@kurkle/color" "^0.3.0"
+
 chokidar@^3.5.3:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-3.6.0.tgz#197c6cc669ef2a8dc5e7b4d97ee4e092c3eb0d5b"
@@ -1373,6 +1296,11 @@ date-fns@^3.3.1, date-fns@^3.6.0:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-3.6.0.tgz#f20ca4fe94f8b754951b24240676e8618c0206bf"
   integrity sha512-fRHTG8g/Gif+kSh50gaGEdToemgfj74aRX3swtiouboip5JDLAyDE9F11nHMIcvOaXeOC6D7SpNhi7uFyB7Uww==
+
+dayjs@^1.11.13:
+  version "1.11.13"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.13.tgz#92430b0139055c3ebb60150aa13e860a4b5a366c"
+  integrity sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==
 
 debug@^3.2.7:
   version "3.2.7"
@@ -3886,6 +3814,11 @@ queue-microtask@^1.2.2:
   resolved "https://registry.yarnpkg.com/queue-microtask/-/queue-microtask-1.2.3.tgz#4929228bbc724dfac43e0efb058caf7b6cfb6243"
   integrity sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==
 
+react-chartjs-2@^5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/react-chartjs-2/-/react-chartjs-2-5.2.0.tgz#43c1e3549071c00a1a083ecbd26c1ad34d385f5d"
+  integrity sha512-98iN5aguJyVSxp5U3CblRLH67J8gkfyGNbiK3c+l1QI/G4irHMPQw44aEPmjVag+YKTyQ260NcF82GTQ3bdscA==
+
 react-clock@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/react-clock/-/react-clock-5.0.0.tgz#369b1c258b304a538a4de7d8cae18c7be77e51d5"
@@ -4776,10 +4709,10 @@ typed-array-length@^1.0.6:
     is-typed-array "^1.1.13"
     possible-typed-array-names "^1.0.0"
 
-typescript@^5:
-  version "5.5.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.5.3.tgz#e1b0a3c394190838a0b168e771b0ad56a0af0faa"
-  integrity sha512-/hreyEujaB0w76zKo6717l3L0o/qEUtRgdvUBvlkhoWeOVMjMuHNHk0BRBzikzuGDqNmPQbg5ifMEqsHLiIUcQ==
+typescript@^5.6.2:
+  version "5.6.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.6.2.tgz#d1de67b6bef77c41823f822df8f0b3bcff60a5a0"
+  integrity sha512-NW8ByodCSNCwZeghjN3o+JX5OFH0Ojg6sadjEKY4huZ52TqbJTJnDo5+Tw98lSy63NZvi4n+ez5m2u5d4PkZyw==
 
 unbox-primitive@^1.0.2:
   version "1.0.2"

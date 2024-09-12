@@ -34,7 +34,7 @@ const SearchRevenue: React.FC<SearchRevenueProps> = ({ searchSchedule, setSearch
                         >
                             <option value='ALL'>Tất cả</option>
                             <option value='pending'>Đang chờ xử lý</option>
-                            <option value='arrangr'>Đang chờ sắp xếp</option>
+                            {/* <option value='arrange'>Đang chờ sắp xếp</option> */}
                             <option value='accept'>Chuẩn bị phòng</option>
                             <option value='completed'>Hoàn thành</option>
                             <option value='refuse'>Đã từ chối</option>

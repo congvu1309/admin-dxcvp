@@ -26,13 +26,18 @@ export type NavLinkChildrens = {
 
 export const ROUTES: NavLinkProps[] = [
     {
-        href: ROUTE.DASHBOARD,
         title: 'Trang chủ',
+        href: ROUTE.DASHBOARD,
         icon: <LayoutDashboard size={18} />,
     },
 ];
 
 export const ROUTES_ADMIN: NavLinkProps[] = [
+    {
+        title: 'Trang chủ',
+        href: ROUTE.DASHBOARD,
+        icon: <LayoutDashboard size={18} />,
+    },
     {
         title: 'Danh mục',
         icon: <Plus size={18} />,
@@ -56,6 +61,11 @@ export const ROUTES_ADMIN: NavLinkProps[] = [
 ];
 
 export const ROUTES_MANAGER: NavLinkProps[] = [
+    {
+        title: 'Trang chủ',
+        href: ROUTE.DASHBOARD,
+        icon: <LayoutDashboard size={18} />,
+    },
     {
         title: 'Dịch vụ',
         icon: <Rows2 size={18} />,

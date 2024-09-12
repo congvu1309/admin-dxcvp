@@ -39,6 +39,41 @@ const ListRevenue = () => {
         setCurrentPage(page);
     };
 
+
+    const getStatusColor = (status: any) => {
+        switch (status) {
+            case 'accept':
+                return 'bg-green-500';
+            case 'refuse':
+                return 'bg-red-500';
+            case 'canceled':
+                return 'bg-yellow-500';
+            case 'completed':
+                return 'bg-blue-500';
+            case 'in-use':
+                return 'bg-purple-500';
+            default:
+                return 'bg-gray-500';
+        }
+    };
+
+    const getStatusLabel = (status: any) => {
+        switch (status) {
+            case 'accept':
+                return 'Chuẩn bị phòng';
+            case 'refuse':
+                return 'Đã từ chối';
+            case 'canceled':
+                return 'Đã hủy';
+            case 'completed':
+                return 'Hoàn thành';
+            case 'in-use':
+                return 'Khách đã nhận phòng'; // New label for "in-use" status
+            default:
+                return 'Đang chờ xử lý';
+        }
+    };
+
     if (!loading && user?.role === 'R1') {
 
         return (
@@ -103,16 +138,10 @@ const ListRevenue = () => {
                                         <td className='py-4'>{schedule.productScheduleData.title}</td>
                                         <td className='py-4'>
                                             <td className='py-4'>
-                                                {schedule.status === 'accept'
-                                                    ? 'Chuẩn bị phòng'
-                                                    : schedule.status === 'refuse'
-                                                        ? 'Đã từ chối'
-                                                        : schedule.status === 'canceled'
-                                                            ? 'Đã hủy'
-                                                            : schedule.status === 'completed'
-                                                                ? 'Hoàn thành'
-                                                                : 'Đang chờ xử lý'
-                                                }
+                                                <span className="flex items-center justify-center">
+                                                    <span className={`w-2 h-2 rounded-full mr-2 ${getStatusColor(schedule.status)}`}></span>
+                                                    {getStatusLabel(schedule.status)}
+                                                </span>
                                             </td>
                                         </td>
                                     </tr>

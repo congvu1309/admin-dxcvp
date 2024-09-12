@@ -124,7 +124,7 @@ const InfoSchedule = () => {
                                 </button>
                             </>
                         )}
-                        {schedule?.status === 'arrange' && (
+                        {schedule?.status === 'in-use' && (
                             <>
                                 <button
                                     className='bg-green-600 text-white px-2 py-1 mx-5 rounded hover:bg-green-700'

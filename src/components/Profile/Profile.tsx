@@ -59,7 +59,7 @@ const Profile = () => {
 
     const validationSchema = Yup.object({
         name: Yup.string().required('Vui lòng nhập thông tin!'),
-        phoneNumber: Yup.string().required('Vui lòng nhập thông tin!'),
+        phoneNumber: Yup.string().min(10, 'Mật khẩu cần dài ít nhất 10 chữ số! ').required('Vui lòng nhập thông tin!'),
         address: Yup.string().required('Vui lòng nhập thông tin!'),
     });
 

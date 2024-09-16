@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useMemo } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import Logo from '@/public/favicon.ico';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
@@ -8,6 +8,12 @@ import { ROUTE, UserRoleEnum } from '@/constant/enum';
 import { useAuth } from '@/hooks/useAuth';
 import { NavLinkProps, ROUTES_ADMIN, ROUTES_MANAGER, ROUTES } from '@/constant/routes';
 import { NavLink, NavLinkAction, NavLinkCollapse } from './nav-link';
+import { Bell } from 'lucide-react';
+import { ProductModel } from '@/models/product';
+import { ScheduleModel } from '@/models/schedule';
+import { getAllScheduleByUserId } from '@/api/schedule';
+import { getAllProductApi } from '@/api/product';
+import { useRouter } from 'next/navigation';
 
 const RenderRoutes = ({ routes }: { routes: NavLinkProps[] }) => {
     return routes.map((route) => {
@@ -37,8 +43,13 @@ const RenderRoutes = ({ routes }: { routes: NavLinkProps[] }) => {
 };
 
 const Sidebar = ({ children }: Readonly<{ children: ReactNode }>) => {
-
     const { user, logout } = useAuth();
+    const [products, setProducts] = useState<ProductModel[]>([]);
+    const [schedules, setSchedules] = useState<ScheduleModel[]>([]);
+    const [notifications, setNotifications] = useState<ScheduleModel[]>([]);
+    const [showNotifications, setShowNotifications] = useState(false);
+    const [newNotifications, setNewNotifications] = useState<Set<number>>(new Set());
+    const router = useRouter();
 
     let imageBase64 = '';
     if (user?.avatar) {
@@ -56,6 +67,72 @@ const Sidebar = ({ children }: Readonly<{ children: ReactNode }>) => {
         }
     }, [user]);
 
+    useEffect(() => {
+        const fetchScheduleData = async () => {
+            try {
+                const response = await getAllScheduleByUserId();
+                setSchedules(response.data);
+            } catch (error) {
+                console.error('Failed to fetch schedule data', error);
+            }
+        };
+
+        fetchScheduleData();
+
+        if (user?.role === 'R2') {
+            const fetchProductData = async () => {
+                try {
+                    const response = await getAllProductApi(user.id);
+                    setProducts(response.data);
+                } catch (error) {
+                    console.error('Failed to fetch product data', error);
+                }
+            };
+
+            if (user.id) {
+                fetchProductData();
+            }
+        }
+
+        const intervalId = setInterval(fetchScheduleData, 20000);
+
+        return () => clearInterval(intervalId);
+    }, [user?.role, user?.id]);
+
+    const productIds = new Set(products.map(product => String(product.id)));
+
+    useEffect(() => {
+        const checkNewSchedules = () => {
+            if (!schedules.length || !productIds.size) {
+                return;
+            }
+
+            const filteredSchedules = schedules.filter(schedule =>
+                productIds.has(String(schedule.productId)) && schedule.status === 'pending'
+            ).reverse();
+
+            const newNotifications = filteredSchedules.filter(schedule =>
+                !notifications.some(notification => notification.id === schedule.id)
+            );
+
+            if (newNotifications.length > 0) {
+                setNotifications(prev => [...prev, ...newNotifications]);
+                setNewNotifications(prev => new Set([...prev, ...newNotifications.map(n => n.id)]));
+            }
+        };
+
+        checkNewSchedules();
+
+        const intervalId = setInterval(checkNewSchedules, 20000);
+        return () => clearInterval(intervalId);
+    }, [schedules, productIds, notifications]);
+
+    const handleViewInfo = (scheduleId: number) => {
+        router.push(`${ROUTE.INFO_SCHEDULE}/${scheduleId}`);
+        setShowNotifications(false);
+        setNewNotifications(prev => new Set([...prev].filter(id => id !== scheduleId)));
+    };
+
     return (
         <>
             <nav className='fixed top-0 z-50 w-full border-b border-gray-200'>
@@ -66,7 +143,33 @@ const Sidebar = ({ children }: Readonly<{ children: ReactNode }>) => {
                             <span className='text-3xl text-primary'>dxcvp</span>
                         </Link>
                     </div>
-                    <div className='hidden lg:flex lg:flex-1 lg:justify-end'>
+                    <div className='hidden lg:flex lg:flex-1 lg:justify-end items-center'>
+                        <div className="pr-5 cursor-pointer relative">
+                            <button onClick={() => setShowNotifications(prev => !prev)}>
+                                <Bell size={30} />
+                                {notifications.length > 0 && (
+                                    <div
+                                        className={`absolute top-0 right-5 w-3 h-3 rounded-full ${newNotifications.size > 0 ? 'bg-red-500' : 'bg-gray-300'}`}
+                                    ></div>
+                                )}
+                            </button>
+                        </div>
+                        {showNotifications && notifications.length > 0 && (
+                            <div className='fixed top-20 right-4 bg-white border p-4 rounded shadow-lg'>
+                                <h3 className='text-lg font-semibold'>Thông báo mới</h3>
+                                <ul>
+                                    {notifications.map(notification => (
+                                        <li
+                                            key={notification.id}
+                                            className={`py-4 cursor-pointer hover:bg-red-50 ${newNotifications.has(notification.id) ? 'font-bold' : ''}`}
+                                            onClick={() => handleViewInfo(notification.id)}
+                                        >
+                                            Lịch trình mới cho {notification.productScheduleData.title} vào ngày {notification.startDate} - {notification.endDate}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
                         <Menu as='div' className='relative inline-block text-left'>
                             <MenuButton>
                                 <div className='h-16 w-16 ring-1 ring-inset ring-gray-300 rounded-full flex items-center justify-center text-2xl font-semibold bg-slate-100'>
@@ -108,16 +211,15 @@ const Sidebar = ({ children }: Readonly<{ children: ReactNode }>) => {
                     </div>
                 </div>
             </nav>
-            <aside
-                className={`fixed top-0 left-0 z-40 w-72 h-screen pt-28 border-r bg-white`}
-                style={{ overflow: 'auto' }}
-            >
-                <div className='h-full pt-2 px-3 pb-4 overflow-y-auto'>
-                    <ul className='space-y-2 font-medium text-black'>
-                        <RenderRoutes routes={[...routesForRole]} />
-                    </ul>
+            <aside className='fixed scroll-auto top-0 left-0 z-40 w-72 h-screen pt-28 border-r bg-white' >
+                <div className='h-full overflow-y-auto'>
+                    <div className='pt-2 px-3 pb-4'>
+                        <ul className='space-y-2 font-medium text-black'>
+                            <RenderRoutes routes={[...routesForRole]} />
+                        </ul>
+                    </div>
                 </div>
-            </aside >
+            </aside>
             <div className='py-4 ml-72 pt-28 min-h-screen relative flex flex-col'>
                 <div className='grow p-10 pt-5'>
                     {children}
@@ -130,6 +232,6 @@ const Sidebar = ({ children }: Readonly<{ children: ReactNode }>) => {
             </div>
         </>
     );
-}
+};
 
 export default Sidebar;

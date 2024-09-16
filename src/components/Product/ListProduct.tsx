@@ -11,7 +11,7 @@ import defaultImage from '@/public/no-image.jpg';
 import Image from 'next/image';
 
 const ListProduct = () => {
-    
+
     const { user, loading } = useAuth();
     const router = useRouter();
     const [products, setProducts] = useState<ProductModel[]>([]);
@@ -80,7 +80,7 @@ const ListProduct = () => {
                                             alt={product.title}
                                             width={400}
                                             height={400}
-                                            className='rounded-md mr-7 bg-no-repeat bg-center bg-cover'
+                                            className='rounded-md mr-7 h-[500px] w-[700px] bg-no-repeat bg-center bg-cover'
                                         />
                                         <h2 className='text-xl font-semibold'>{product.title}</h2>
                                     </div>

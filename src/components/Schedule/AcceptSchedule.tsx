@@ -2,7 +2,7 @@
 
 import { ROUTE } from '@/constant/enum';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
-import { ExclamationTriangleIcon } from '@heroicons/react/16/solid';
+import { ExclamationTriangleIcon, CheckCircleIcon, InformationCircleIcon } from '@heroicons/react/16/solid';
 import { useEffect } from 'react';
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
@@ -68,11 +68,23 @@ const AcceptSchedule: React.FC<AcceptScheduleProps> = ({ openAccept, setOpenAcce
         },
     });
 
+    // Function to dynamically select the icon
+    const getIcon = () => {
+        if (scheduleStatusToAccept === 'pending') {
+            return <ExclamationTriangleIcon aria-hidden='true' className='h-6 w-6 text-yellow-600' />;
+        } else if (scheduleStatusToAccept === 'accept') {
+            return <CheckCircleIcon aria-hidden='true' className='h-6 w-6 text-green-600' />;
+        } else if (scheduleStatusToAccept === 'in-use') {
+            return <InformationCircleIcon aria-hidden='true' className='h-6 w-6 text-blue-600' />;
+        }
+        return <ExclamationTriangleIcon aria-hidden='true' className='h-6 w-6 text-red-600' />;
+    };
+
     const message = (() => {
         if (scheduleStatusToAccept === 'pending') {
             return 'Bạn chấp nhận yêu cầu này!';
         } else if (scheduleStatusToAccept === 'in-use') {
-            return 'Hoàn thành yêu cầu này!';
+            return 'Hoàn thành!';
         } else {
             return 'Khách đã nhận phòng!';
         }
@@ -94,7 +106,7 @@ const AcceptSchedule: React.FC<AcceptScheduleProps> = ({ openAccept, setOpenAcce
                             <div className='bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4'>
                                 <div className='sm:flex sm:items-center'>
                                     <div className='mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10'>
-                                        <ExclamationTriangleIcon aria-hidden='true' className='h-6 w-6 text-red-600' />
+                                        {getIcon()}
                                     </div>
                                     <div className='mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left'>
                                         <DialogTitle as='h3' className='text-xl font-semibold leading-6 text-gray-900'>

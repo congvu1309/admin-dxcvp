@@ -73,7 +73,7 @@ const LoginForm = () => {
                 <div className='h-screen custom-gradient'>
                     <div className='w-1/4 h-1/2 bg-white rounded-xl absolute m-auto inset-0'>
                         <div className='flex flex-col'>
-                            <div className='text-center text-2xl font-semibold py-6'>Đăng nhập</div>
+                            <div className='text-center text-2xl font-semibold py-4'>Đăng nhập</div>
                             <div className='p-5'>
                                 <form onSubmit={formik.handleSubmit}>
                                     <div className='pb-2'>

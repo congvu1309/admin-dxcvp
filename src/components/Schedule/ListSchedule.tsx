@@ -15,6 +15,14 @@ import AcceptSchedule from "./AcceptSchedule";
 import SearchSchedule from "./SearchSchedule";
 import RefuseSchdedule from "./RefuseSchedule";
 
+const isCancellationDuringStay = (startDate: string, endDate: string) => {
+    const currentDate = new Date();
+    const parsedStartDate = new Date(startDate);
+    const parsedEndDate = new Date(endDate);
+
+    return currentDate > parsedStartDate && currentDate < parsedEndDate;
+};
+
 const ListSchedule = () => {
     const { user, loading } = useAuth();
     const [products, setProducts] = useState<ProductModel[]>([]);
@@ -124,6 +132,22 @@ const ListSchedule = () => {
             return productIds.has(String(schedule.productId));
         });
 
+        const getTotalAmount = (schedule: ScheduleModel) => {
+            const formattedPrice = schedule.productScheduleData.price ?? "0";
+            const formattedPay = schedule.pay ?? "0";
+            const pricePerNight = Number(formattedPrice.replace(/[^\d.-]/g, '')) || 0;
+            const priceTotal = Number(formattedPay.replace(/[^\d.-]/g, '')) || 0;
+            const provisional = pricePerNight * (schedule.numberOfDays || 1);
+            const serviceCharge = provisional * 0.2;
+            let totalAmount = priceTotal - serviceCharge;
+
+            if (schedule.status === 'canceled' && isCancellationDuringStay(schedule.startDate, schedule.endDate)) {
+                totalAmount *= 0.5;
+            }
+
+            return totalAmount.toLocaleString();
+        };
+
         return (
             <>
                 <div className='overflow-x-auto'>
@@ -175,7 +199,7 @@ const ListSchedule = () => {
                                             </td>
                                             <td className='py-4 text-center'>{schedule.phoneNumber}</td>
                                             <td className='py-4 text-center'>{schedule.startDate} - {schedule.endDate}</td>
-                                            <td className='py-4 text-center'>{schedule.pay}</td>
+                                            <td className='py-4 text-center'>{getTotalAmount(schedule)}</td>
                                             <td className='py-4 text-center w-[270px]'>{schedule.productScheduleData.title}</td>
                                             <td className='py-4 text-center'>
                                                 <span className="flex items-center justify-center">
@@ -185,7 +209,7 @@ const ListSchedule = () => {
                                             </td>
                                             <td className='py-4 text-center'>
                                                 <button
-                                                    className='bg-primary-foreground text-white px-2 py-1 rounded hover:bg-primary'
+                                                    className='bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600'
                                                     onClick={() => handleViewInfo(schedule.id)}
                                                 >
                                                     <CircleAlert />
@@ -194,14 +218,14 @@ const ListSchedule = () => {
                                                 {schedule.status === 'pending' && (
                                                     <>
                                                         <button
-                                                            className='bg-primary-foreground text-white px-2 py-1 mx-5 rounded hover:bg-primary'
+                                                            className='bg-green-500 text-white px-2 py-1 mx-2 rounded hover:bg-green-600'
                                                             onClick={() => handleAccept(schedule.id, schedule.status)}
                                                         >
                                                             <Check />
                                                         </button>
 
                                                         <button
-                                                            className='bg-red-300 text-white px-2 py-1 rounded hover:bg-red-500'
+                                                            className='bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600'
                                                             onClick={() => handleRefuse(schedule?.id, schedule?.status)}
                                                         >
                                                             <X />

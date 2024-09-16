@@ -13,6 +13,7 @@ export class ScheduleModel {
     userProductData: any = null;
     pay: string = '';
     status: string = '';
+    createdAt: string = '';
 
     constructor(auth?: ScheduleModel) {
         if (auth) {

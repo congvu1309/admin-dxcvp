@@ -14,14 +14,8 @@ import { useRouter } from "next/navigation";
 import AcceptSchedule from "./AcceptSchedule";
 import SearchSchedule from "./SearchSchedule";
 import RefuseSchdedule from "./RefuseSchedule";
-
-const isCancellationDuringStay = (startDate: string, endDate: string) => {
-    const currentDate = new Date();
-    const parsedStartDate = new Date(startDate);
-    const parsedEndDate = new Date(endDate);
-
-    return currentDate > parsedStartDate && currentDate < parsedEndDate;
-};
+import getTotalAmount from "@/utils/getTotalAmount";
+import { getStatusColor, getStatusLabel } from "@/utils/statusUtils";
 
 const ListSchedule = () => {
     const { user, loading } = useAuth();
@@ -90,40 +84,6 @@ const ListSchedule = () => {
         setCurrentPage(page);
     };
 
-    const getStatusColor = (status: any) => {
-        switch (status) {
-            case 'accept':
-                return 'bg-green-500';
-            case 'refuse':
-                return 'bg-red-500';
-            case 'canceled':
-                return 'bg-yellow-500';
-            case 'completed':
-                return 'bg-blue-500';
-            case 'in-use':
-                return 'bg-purple-500';
-            default:
-                return 'bg-gray-500';
-        }
-    };
-
-    const getStatusLabel = (status: any) => {
-        switch (status) {
-            case 'accept':
-                return 'Chuẩn bị phòng';
-            case 'refuse':
-                return 'Đã từ chối';
-            case 'canceled':
-                return 'Đã hủy';
-            case 'completed':
-                return 'Hoàn thành';
-            case 'in-use':
-                return 'Khách đã nhận phòng';
-            default:
-                return 'Đang chờ xử lý';
-        }
-    };
-
     if (!loading && user?.role === 'R2') {
 
         const productIds = new Set(products.map(product => String(product.id)));
@@ -131,22 +91,6 @@ const ListSchedule = () => {
         const filteredSchedules = schedules.filter(schedule => {
             return productIds.has(String(schedule.productId));
         });
-
-        const getTotalAmount = (schedule: ScheduleModel) => {
-            const formattedPrice = schedule.productScheduleData.price ?? "0";
-            const formattedPay = schedule.pay ?? "0";
-            const pricePerNight = Number(formattedPrice.replace(/[^\d.-]/g, '')) || 0;
-            const priceTotal = Number(formattedPay.replace(/[^\d.-]/g, '')) || 0;
-            const provisional = pricePerNight * (schedule.numberOfDays || 1);
-            const serviceCharge = provisional * 0.2;
-            let totalAmount = priceTotal - serviceCharge;
-
-            if (schedule.status === 'canceled' && isCancellationDuringStay(schedule.startDate, schedule.endDate)) {
-                totalAmount *= 0.5;
-            }
-
-            return totalAmount.toLocaleString();
-        };
 
         return (
             <>
@@ -199,7 +143,7 @@ const ListSchedule = () => {
                                             </td>
                                             <td className='py-4 text-center'>{schedule.phoneNumber}</td>
                                             <td className='py-4 text-center'>{schedule.startDate} - {schedule.endDate}</td>
-                                            <td className='py-4 text-center'>{getTotalAmount(schedule)}</td>
+                                            <td className='py-4 text-center'>{getTotalAmount(schedule)} VND</td>
                                             <td className='py-4 text-center w-[270px]'>{schedule.productScheduleData.title}</td>
                                             <td className='py-4 text-center'>
                                                 <span className="flex items-center justify-center">

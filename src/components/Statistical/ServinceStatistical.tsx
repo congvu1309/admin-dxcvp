@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import 'chart.js/auto';
+import isCancellationBeforeStart from "@/utils/isBeforeStartDate";
 
 const ServinceStatistical = () => {
     const { user, loading } = useAuth();
@@ -54,7 +55,10 @@ const ServinceStatistical = () => {
     if (!loading && user?.role === 'R2') {
         const productIds = new Set(products.map(product => String(product.id)));
 
-        const filteredSchedules = schedules.filter(schedule => productIds.has(String(schedule.productId)) && schedule.status === 'completed');
+        const filteredSchedules = schedules.filter(schedule =>
+            productIds.has(String(schedule.productId)) &&
+            (schedule.status === 'completed' || schedule.status === 'canceled' || schedule.status === 'refunded')
+        );
 
         const monthlyStats = filteredSchedules.reduce((acc, schedule) => {
             const monthYear = format(parse(schedule.startDate, 'dd/MM/yyyy', new Date()), 'MM-yyyy');
@@ -67,14 +71,26 @@ const ServinceStatistical = () => {
             const totalAmount = priceTotal - serviceCharge;
 
             if (!acc[monthYear]) {
-                acc[monthYear] = { totalPay: 0, appointments: 0 };
+                acc[monthYear] = { totalPay: 0, appointments: 0, canceledAppointments: 0 };
             }
 
-            acc[monthYear].totalPay += totalAmount;
-            acc[monthYear].appointments += 1;
+            const cancellationDate = new Date();
+            const isBeforeStart = isCancellationBeforeStart(schedule.startDate, cancellationDate);
+
+            if (schedule.status === 'completed') {
+                acc[monthYear].totalPay += totalAmount;
+                acc[monthYear].appointments += 1;
+            } else if (schedule.status === 'canceled' || schedule.status === 'refunded') {
+                if (isBeforeStart) {
+                    acc[monthYear].totalPay += 0;
+                } else {
+                    acc[monthYear].totalPay += totalAmount * 0.5;
+                }
+                acc[monthYear].canceledAppointments += 1;
+            }
 
             return acc;
-        }, {} as Record<string, { totalPay: number, appointments: number }>);
+        }, {} as Record<string, { totalPay: number, appointments: number, canceledAppointments: number }>);
 
         const chartData = {
             labels: Object.keys(monthlyStats),
@@ -107,7 +123,8 @@ const ServinceStatistical = () => {
                     <thead className="bg-teal-600 text-white">
                         <tr>
                             <th className="py-3 px-6 text-center">Tháng</th>
-                            <th className="py-3 px-6 text-center">Số lịch hẹn</th>
+                            <th className="py-3 px-6 text-center">Số lịch hẹn thành công</th>
+                            <th className="py-3 px-6 text-center">Số lịch hẹn đã hủy</th>
                             <th className="py-3 px-6 text-center">Tổng tiền</th>
                             <th className="py-3 px-6 text-center">Chi tiết</th>
                         </tr>
@@ -117,6 +134,7 @@ const ServinceStatistical = () => {
                             <tr key={monthYear} className={`border-b ${idx % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
                                 <td className="py-3 px-6 text-center">{monthYear}</td>
                                 <td className="py-3 px-6 text-center">{stats.appointments}</td>
+                                <td className="py-3 px-6 text-center">{stats.canceledAppointments}</td>
                                 <td className="py-3 px-6 text-center">{stats.totalPay.toLocaleString()}</td>
                                 <td className="py-3 px-6 text-center">
                                     <button
@@ -133,6 +151,8 @@ const ServinceStatistical = () => {
             </>
         );
     }
-}
+
+    return null;
+};
 
 export default ServinceStatistical;

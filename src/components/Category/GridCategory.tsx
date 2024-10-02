@@ -55,21 +55,20 @@ const GridCategory = () => {
                             if (category.image) {
                                 imageBase64 = Buffer.from(category.image, 'base64').toString('binary');
                             }
-    
+
                             return (
                                 <div
                                     key={category.id}
-                                    className='border p-4 rounded-md shadow-md cursor-pointer'
+                                    className='border p-4 rounded-md shadow-md cursor-pointer flex items-center justify-center'
                                     onClick={() => handleViewDetailCategory(category.id)}
                                 >
-                                    <div className='flex items-center'>
-                                        <img
-                                            src={imageBase64}
-                                            alt={category.title}
-                                            className='rounded-md mr-7 h-12 w-12'
-                                        />
-                                        <h2 className='text-xl font-semibold'>{category.title}</h2>
-                                    </div>
+
+                                    <img
+                                        src={imageBase64}
+                                        alt={category.title}
+                                        className='rounded-md mr-7 h-12 w-12'
+                                    />
+                                    <h2 className='text-xl font-semibold'>{category.title}</h2>
                                 </div>
                             );
                         })}

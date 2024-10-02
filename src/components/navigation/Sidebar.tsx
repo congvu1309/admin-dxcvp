@@ -14,6 +14,7 @@ import { ScheduleModel } from '@/models/schedule';
 import { getAllScheduleByUserId } from '@/api/schedule';
 import { getAllProductApi } from '@/api/product';
 import { useRouter } from 'next/navigation';
+import { parse } from 'date-fns';
 
 const RenderRoutes = ({ routes }: { routes: NavLinkProps[] }) => {
     return routes.map((route) => {
@@ -103,13 +104,31 @@ const Sidebar = ({ children }: Readonly<{ children: ReactNode }>) => {
 
     useEffect(() => {
         const checkNewSchedules = () => {
-            if (!schedules.length || !productIds.size) {
+            if (!schedules.length) {
                 return;
             }
 
-            const filteredSchedules = schedules.filter(schedule =>
-                productIds.has(String(schedule.productId)) && schedule.status === 'pending'
-            ).reverse();
+            let filteredSchedules: ScheduleModel[] = [];
+
+            if (user?.role === UserRoleEnum.ADMIN) {
+                // For ADMIN role: Filter by status 'canceled' and check if before 'endDate'
+                filteredSchedules = schedules.filter(schedule => {
+                    const isCanceled = schedule.status === 'canceled';
+                    const isBeforeEndDate = parse(schedule.endDate, 'dd/MM/yyyy', new Date()) > new Date();
+                    return isCanceled && isBeforeEndDate;
+                }).reverse();
+            } else if (user?.role === UserRoleEnum.MANAGER) {
+                if (!productIds.size) {
+                    return;
+                }
+
+                filteredSchedules = schedules.filter(schedule => {
+                    const isPending = schedule.status === 'pending';
+                    const isBeforeStartDate = parse(schedule.startDate, 'dd/MM/yyyy', new Date()) > new Date();
+                    const isValidProduct = productIds.has(String(schedule.productId));
+                    return isPending && isBeforeStartDate && isValidProduct;
+                }).reverse();
+            }
 
             const newNotifications = filteredSchedules.filter(schedule =>
                 !notifications.some(notification => notification.id === schedule.id)
@@ -125,12 +144,89 @@ const Sidebar = ({ children }: Readonly<{ children: ReactNode }>) => {
 
         const intervalId = setInterval(checkNewSchedules, 20000);
         return () => clearInterval(intervalId);
-    }, [schedules, productIds, notifications]);
+    }, [schedules, productIds, notifications, user?.role]);
+
 
     const handleViewInfo = (scheduleId: number) => {
         router.push(`${ROUTE.INFO_SCHEDULE}/${scheduleId}`);
         setShowNotifications(false);
         setNewNotifications(prev => new Set([...prev].filter(id => id !== scheduleId)));
+    };
+
+    const renderNotificationBell = () => {
+        if (user?.role === UserRoleEnum.ADMIN) {
+            return (
+                <div className="relative">
+                    <button onClick={() => setShowNotifications(prev => !prev)} className="relative">
+                        <Bell size={30} />
+                        {notifications.length > 0 && (
+                            <div
+                                className={`absolute top-0 right-0 w-3 h-3 rounded-full ${newNotifications.size > 0 ? 'bg-red-500' : 'bg-gray-300'}`}
+                            ></div>
+                        )}
+                    </button>
+                    {showNotifications && (
+                        <div className='fixed top-20 right-4 bg-white border p-4 rounded shadow-lg'>
+                            <h3 className='text-lg font-semibold'>Thông báo mới</h3>
+                            <ul>
+                                {notifications.length > 0 ? (
+                                    notifications.map(notification => (
+                                        <li key={notification.id}>
+                                            <button
+                                                className={`w-full text-left cursor-pointer py-4 hover:bg-red-50 ${newNotifications.has(notification.id) ? 'font-bold' : ''}`}
+                                                onClick={() => handleViewInfo(notification.id)}
+                                            >
+                                                Lịch trình bị hủy cho {notification.productScheduleData.title} vào ngày {notification.startDate} - {notification.endDate}
+                                            </button>
+                                        </li>
+                                    ))
+                                ) : (
+                                    <li>Hiện chưa có lịch trình bị hủy mới</li>
+                                )}
+                            </ul>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        if (user?.role === UserRoleEnum.MANAGER) {
+            return (
+                <div className="relative">
+                    <button onClick={() => setShowNotifications(prev => !prev)} className="relative">
+                        <Bell size={30} />
+                        {notifications.length > 0 && (
+                            <div
+                                className={`absolute top-0 right-0 w-3 h-3 rounded-full ${newNotifications.size > 0 ? 'bg-red-500' : 'bg-gray-300'}`}
+                            ></div>
+                        )}
+                    </button>
+                    {showNotifications && (
+                        <div className='fixed top-20 right-4 bg-white border p-4 rounded shadow-lg'>
+                            <h3 className='text-lg font-semibold'>Thông báo mới</h3>
+                            <ul>
+                                {notifications.length > 0 ? (
+                                    notifications.map(notification => (
+                                        <li key={notification.id}>
+                                            <button
+                                                className={`w-full text-left cursor-pointer py-4 hover:bg-red-50 ${newNotifications.has(notification.id) ? 'font-bold' : ''}`}
+                                                onClick={() => handleViewInfo(notification.id)}
+                                            >
+                                                Lịch trình mới cho {notification.productScheduleData.title} vào ngày {notification.startDate} - {notification.endDate}
+                                            </button>
+                                        </li>
+                                    ))
+                                ) : (
+                                    <li>Hiện chưa có lịch trình mới</li>
+                                )}
+                            </ul>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        return null;
     };
 
     return (
@@ -144,32 +240,9 @@ const Sidebar = ({ children }: Readonly<{ children: ReactNode }>) => {
                         </Link>
                     </div>
                     <div className='hidden lg:flex lg:flex-1 lg:justify-end items-center'>
-                        <div className="pr-5 cursor-pointer relative">
-                            <button onClick={() => setShowNotifications(prev => !prev)}>
-                                <Bell size={30} />
-                                {notifications.length > 0 && (
-                                    <div
-                                        className={`absolute top-0 right-5 w-3 h-3 rounded-full ${newNotifications.size > 0 ? 'bg-red-500' : 'bg-gray-300'}`}
-                                    ></div>
-                                )}
-                            </button>
+                        <div className="pr-5">
+                            {renderNotificationBell()}
                         </div>
-                        {showNotifications && notifications.length > 0 && (
-                            <div className='fixed top-20 right-4 bg-white border p-4 rounded shadow-lg'>
-                                <h3 className='text-lg font-semibold'>Thông báo mới</h3>
-                                <ul>
-                                    {notifications.map(notification => (
-                                        <li
-                                            key={notification.id}
-                                            className={`py-4 cursor-pointer hover:bg-red-50 ${newNotifications.has(notification.id) ? 'font-bold' : ''}`}
-                                            onClick={() => handleViewInfo(notification.id)}
-                                        >
-                                            Lịch trình mới cho {notification.productScheduleData.title} vào ngày {notification.startDate} - {notification.endDate}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
                         <Menu as='div' className='relative inline-block text-left'>
                             <MenuButton>
                                 <div className='h-16 w-16 ring-1 ring-inset ring-gray-300 rounded-full flex items-center justify-center text-2xl font-semibold bg-slate-100'>

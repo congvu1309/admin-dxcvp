@@ -140,7 +140,7 @@ const AddProduct = () => {
         setSelectedProvince(selectedOption);
         formik.setFieldValue('provinces', selectedOption ? selectedOption.label : '');
     };
-    
+
     const districtsOptions = selectedProvince
         ? provincesWithDistricts.find(province => province.id === selectedProvince.value)?.districts.map(district => ({
             value: district,
@@ -151,21 +151,15 @@ const AddProduct = () => {
     const handleDistrictsChange = (selectedOption: { value: string; label: string } | null) => {
         formik.setFieldValue('districts', selectedOption ? selectedOption.label : '');
     };
-
-    const formatNumber = (value: any) => {
-        // Remove non-numeric characters except decimal point
-        const cleanedValue = value.replace(/\D/g, '');
-        // Format the number with commas
+    const formatNumber = (value: string) => {
+        const cleanedValue = value.replace(/[^\d]/g, '');
         const formattedValue = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         return formattedValue;
     };
 
-    const handleChangePrice = (event: any) => {
-        // Get the raw value
+    const handleChangePrice = (event: React.ChangeEvent<HTMLInputElement>) => {
         const rawValue = event.target.value;
-        // Format the number
         const formattedValue = formatNumber(rawValue);
-        // Update formik value and input field
         formik.setFieldValue('price', formattedValue);
     };
 
@@ -193,11 +187,11 @@ const AddProduct = () => {
     }));
 
     const handleCheckInChange = (selectedOption: { value: string; label: string } | null) => {
-        formik.setFieldValue('checkIn', selectedOption ? selectedOption.value : '');
+        formik.setFieldValue('checkIn', selectedOption ? selectedOption.label : '');
     };
 
     const handleCheckOutChange = (selectedOption: { value: string; label: string } | null) => {
-        formik.setFieldValue('checkOut', selectedOption ? selectedOption.value : '');
+        formik.setFieldValue('checkOut', selectedOption ? selectedOption.label : '');
     };
 
     const mutation = useMutation({
@@ -223,6 +217,7 @@ const AddProduct = () => {
         validationSchema,
         onSubmit: (values) => {
             mutation.mutate(values);
+            // console.log(values);
         },
     });
 
@@ -310,7 +305,7 @@ const AddProduct = () => {
                                 <Select
                                     id='districts'
                                     className=''
-                                    value={districtsOptions.find(option => option.value === formik.values.districts) || null}
+                                    value={districtsOptions.find(option => option.label === formik.values.districts) || null}
                                     onChange={(option) => handleDistrictsChange(option as any)}
                                     options={districtsOptions}
                                     placeholder='Chọn quận/huyện'
@@ -327,7 +322,7 @@ const AddProduct = () => {
                                     <input
                                         id="price"
                                         name="price"
-                                        // type='number'
+                                        type=''
                                         className="block w-full mt-1 rounded-md border border-gray-300 py-2 px-4 bg-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                                         value={formatNumber(formik.values.price)}
                                         onChange={handleChangePrice}
@@ -441,7 +436,7 @@ const AddProduct = () => {
                                     id="checkIn"
                                     name="checkIn"
                                     options={timeOptions}
-                                    value={timeOptions.find(option => option.value === formik.values.checkIn) || null}
+                                    value={timeOptions.find(option => option.label === formik.values.checkIn) || null}
                                     onChange={handleCheckInChange}
                                     placeholder="Chọn thời gian nhận phòng"
                                 />
@@ -455,7 +450,7 @@ const AddProduct = () => {
                                     id="checkOut"
                                     name="checkOut"
                                     options={timeOptions}
-                                    value={timeOptions.find(option => option.value === formik.values.checkOut) || null}
+                                    value={timeOptions.find(option => option.label === formik.values.checkOut) || null}
                                     onChange={handleCheckOutChange}
                                     placeholder="Chọn thời gian trả phòng"
                                 />

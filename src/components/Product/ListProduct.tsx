@@ -80,7 +80,7 @@ const ListProduct = () => {
                                             alt={product.title}
                                             width={400}
                                             height={400}
-                                            className='rounded-md mr-7 h-[500px] w-[700px] bg-no-repeat bg-center bg-cover'
+                                            className='rounded-md mr-7 h-auto w-[500px] bg-no-repeat bg-center bg-cover'
                                         />
                                         <h2 className='text-xl font-semibold'>{product.title}</h2>
                                     </div>

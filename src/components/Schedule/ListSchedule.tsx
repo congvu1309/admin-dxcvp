@@ -106,10 +106,10 @@ const ListSchedule = () => {
                             <thead className='text-black'>
                                 <tr>
                                     <th className='w-2/14 text-center'>Người đại diện</th>
-                                    <th className='w-2/14 text-center'>Số điện thoại</th>
+                                    {/* <th className='w-2/14 text-center'>Số điện thoại</th> */}
                                     <th className='w-2/14 text-center'>Ngày</th>
                                     <th className='w-2/14 text-center'>Thành tiền</th>
-                                    <th className='w-2/14 text-center'>Dịch vụ</th>
+                                    <th className='w-4/14 text-center'>Dịch vụ</th>
                                     <th className='w-2/14 text-center'>Trạng thái</th>
                                     <th className='w-2/14 text-center'></th>
                                 </tr>
@@ -141,7 +141,7 @@ const ListSchedule = () => {
                                                     className='rounded-md mr-7 bg-no-repeat bg-center bg-cover'
                                                 />
                                             </td>
-                                            <td className='py-4 text-center'>{schedule.phoneNumber}</td>
+                                            {/* <td className='py-4 text-center'>{schedule.phoneNumber}</td> */}
                                             <td className='py-4 text-center'>{schedule.startDate} - {schedule.endDate}</td>
                                             <td className='py-4 text-center'>{getTotalAmount(schedule)} VND</td>
                                             <td className='py-4 text-center w-[270px]'>{schedule.productScheduleData.title}</td>
